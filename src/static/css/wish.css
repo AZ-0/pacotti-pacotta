@@ -1,0 +1,13 @@
+x-wish::part(content) {
+    font-family: sans-serif;
+    box-sizing: border-box;
+    border: 0.2em solid black;
+    border-radius: 0.4em;
+    box-shadow: 0 0.1em 0.2em rgb(0 0 0 / 45%);
+    background-color: bisque;
+}
+
+x-wish::part(foreign) {
+    color: red;
+    font-style: bold;
+}

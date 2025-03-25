@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from markupsafe import escape
 from enum import IntEnum
 
 UserID = int
@@ -19,18 +20,50 @@ class User:
     birthday: Date    # birthday date of the user
     password: str     # (plaintext!) password of the user
 
+    def __eq__(self, other) -> bool:
+        return isinstance(other, User) and other.id == self.id
+
+    def js(self) -> str:
+        """Converts to javascript; for use in jinja2 templating"""
+        return f'new User({self.id}, {repr(self.name)}, {self.birthday})'
+
+    def html_tag(self) -> str:
+        return f'<x-user uid={self.id} bday={self.birthday} name={escape(self.name)}></x-user>'
+
 
 @dataclass
 class Wish:
     id:        WishID   # identifier of a wish
     recipient: User     # person who would receive the gift
-    wishmaker: User     # person who created the wish
+    maker:     User     # person who created the wish
     claim:     User     # person who would give the gift
     kind:      WishKind # kind of wish
     content:   str      # text content of the wish
     hidden:    bool     # whether the wish is hidden from the recipient
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(self, *args, **kwargs)
-        self.foreign: bool = self.wishmaker.id != self.recipient.id
+    def __post_init__(self):
+        self.foreign: bool = self.maker.id != self.recipient.id
         assert self.foreign or not self.hidden  # you cannot hide from your own wishes!
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, User) and other.id == self.id
+
+    def js(self) -> str:
+        """Converts to javascript; for use in jinja2 templating"""
+        claim  = 'null' if self.claim is None else self.claim.js()
+        hidden = str(self.hidden).lower()
+        return f'new Wish({self.id}, {self.recipient.js()}, {self.maker.js()}, {claim}, {self.kind}, {repr(self.content)}, {hidden})'
+
+    def html_tag(self) -> str:
+        return ''.join([
+            '<x-wish',
+            f' wishid={self.id}',
+            f' kind={self.kind}',
+            f' content={escape(self.content)}',
+            ' x-hidden' if self.hidden else '',
+            '>',
+            self.recipient.html_tag(),
+            self.maker.html_tag(),
+            self.claim.html_tag() if self.claim else '',
+            '</x-wish>'
+        ])

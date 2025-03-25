@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Le coin cadeaux</h1>
+        <h3>De qui veux-tu consulter les souhaits ?</h3>
+
+        <form id="form">
+            <select id="user" autofocus required>
+                {% for uid, user in users.items() %}
+                <option value="{{ uid }}">{{ user.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Go!</button>
+        </form>
+
+        <p>
+            <b>Compte (id {{ user.id }}):</b> {{ user.name }} (né.e le {{ user.birthday }})
+        </p>
+    </body>
+    <script>
+        const form = document.getElementById('form')
+        const user = document.getElementById('user')
+        form.addEventListener('submit', event => {
+            event.preventDefault()
+            location.assign(`/wish/view/${user.value}`)
+        })
+    </script>
+</html>

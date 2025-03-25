@@ -20,3 +20,7 @@ class RequestKey(Key):
     WISH_HIDDEN    = 'wishhidden'
     WISH_KIND      = 'wishkind'
     WISH_RECIPIENT = 'wishrecipient'
+
+
+class AppKey(Key):
+    DEBUG = 'debug'

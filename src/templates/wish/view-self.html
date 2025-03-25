@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- defer means the whole document parses before executing script -->
+        <script src="/static/js/user.js" defer></script>
+        {% for user in users %}
+        {{ user.html_tag() | safe }}
+        {% endfor %}
+        <script src="/static/js/wish.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
+    </head>
+    <body>
+        <h1>Le coin cadeaux</h1>
+        <h3>Mes souhaits</h3>
+
+        <div id="wishes">
+            {% for wish in wishes %}
+            {{ wish.html_tag() | safe }}
+            {% endfor %}
+        </div>
+
+        <p class="test">test paragraph here</p>
+
+        <x-navbar user="{{ user.id }}"></x-navbar>
+    </body>
+</html>

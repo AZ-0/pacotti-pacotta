@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="/script/wish.js"></script>
+    </head>
+    <body>
+        <h1>Le coin cadeaux</h1>
+        <h3>Les souhaits que j'ai créé pour quelqu'un d'autre</h3>
+
+        {% for wish in wishes %}
+            <x-wish wid="{{ wish.id }}" recipient="{{ wish.recipient.name }}" kind="{{ wish.kind }}" hidden="{{ wish.hidden }}">{{ wish.content }}</x-wish>
+        {% endfor %}
+
+        <p>
+            <b>Compte (id {{ user.id }}):</b> {{ user.name }} (né.e le {{ user.birthday }})
+        </p>
+    </body>
+</html>

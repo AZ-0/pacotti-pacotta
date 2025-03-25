@@ -1,18 +1,25 @@
-from aiosqlite import connect
+from aiohttp.web import Application
+from aiosqlite import Cursor, Row, connect
+from typing import Iterable, Callable, TypeVar
+import os, logging, contextlib
 
-from model import User, UserID, Wish, WishID, WishKind
+from . model import User, UserID, Wish, WishID, WishKind
+from . keys import AppKey as akey
 
 DB_PATH = 'db.sqlite'
 
-TABLE_DEF = """
+TABLE_DEF = [
+"""
 CREATE TABLE IF NOT EXISTS users (
     id   INTEGER NOT NULL,
-    name TEXT    NOT NULL,
+    name TEXT    NOT NULL UNIQUE,
     bday INTEGER NOT NULL,
+    pwd  TEXT    NOT NULL,
 
-    PRIMARY KEY(id),
+    PRIMARY KEY(id)
 ) STRICT;
-
+""",
+"""
 CREATE TABLE IF NOT EXISTS wishes (
     id        INTEGER NOT NULL,
     recipient INTEGER NOT NULL,
@@ -20,24 +27,22 @@ CREATE TABLE IF NOT EXISTS wishes (
     claim     INTEGER,
     kind      INTEGER NOT NULL,
     content   TEXT    NOT NULL,
-    hidden    BOOLEAN NOT NULL,
+    hidden    INT     NOT NULL,
 
     PRIMARY KEY(id),
     FOREIGN KEY(recipient) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY(maker)     REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY(claim)     REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY(claim)     REFERENCES users(id) ON DELETE SET NULL
 ) STRICT;
+""",
 """
+INSERT OR REPLACE INTO users (id,name,bday,pwd) VALUES (0,"admin",0,"pwd");
+""",
+]
 
-
-async def init():
-    async with connect(DB_PATH) as db:
-        await db.execute(TABLE_DEF)
-        await db.commit()
-
-
+T = TypeVar('T')
+logger = logging.Logger(__file__)
 users: dict[UserID, User] = {}
-
 
 def user_from_password(password: str) -> User | None:
     for user in users.values():
@@ -45,32 +50,112 @@ def user_from_password(password: str) -> User | None:
             return user
 
 
-def parse_wish(row) -> Wish:
-    return Wish(
-        id = row['id'],
-        recipient = users.get(row['recipient']),
-        wishmaker = users.get(row['maker']),
-        claim     = users.get(row['claim']),
-        kind    = WishKind(row['kind']),
-        content = row['content'],
-        hidden  = bool(row['hidden'])
+def parse_user(row: Row) -> User:
+    return User(
+        id   = row[0],
+        name = row[1],
+        birthday = row[2],
+        password = row[3],
     )
 
 
-async def execute_fetchall(statement, *args):
+def parse_wish(row: Row) -> Wish:
+    return Wish(
+        id = row[0],
+        recipient = users[row[1]],
+        maker     = users[row[2]],
+        claim     = users.get(row[3]),
+        kind    = WishKind(row[4]),
+        content = row[5],
+        hidden  = bool(row[6])
+    )
+
+
+##### META
+
+
+async def startup(app: Application):
+    global DB_PATH
+
+    if app[akey.DEBUG]:
+        DB_PATH = 'debug-db.sqlite'
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(DB_PATH)
+
+    await execute_many(TABLE_DEF)
+    app.logger.info(f"Initialized database at {DB_PATH}")
+
+    for row in await execute_fetchall("SELECT * FROM users"):
+        user = parse_user(row)
+        users[user.id] = user
+    app.logger.info(f"Loaded {len(users)} users")
+
+    if app[akey.DEBUG]:
+        admin = users[0]
+        await register_wish(Wish(
+            None,
+            admin,
+            admin,
+            None,
+            0,
+            "test wish",
+            False
+        ))
+
+
+async def execute_fetchall(statement: str, *args) -> Iterable[Row]:
     async with connect(DB_PATH) as db:
-        data = await db.execute_fetchall(statement, args)
+        return await db.execute_fetchall(statement, args)
+
+
+async def execute_fetchone(statement: str, *args) -> Row:
+    async with connect(DB_PATH) as db:
+        return await (await db.execute(statement, args)).fetchone()
+
+
+async def execute_many(statements: Iterable[str]) -> None:
+    async with connect(DB_PATH) as db:
+        for statement in statements:
+            await db.execute(statement)
+        await db.commit()
+
+
+async def execute_commit(statement: str, *args, extractor: Callable[[Cursor], T] = lambda c: c) -> T:
+    """When extracting data such as last insert id, it is important to retrieve it right after the execution (before the commitment!).
+    Commitment may perform internal operations that would change the desired values.
+    Some data may only be gathered when the connection is alive."""
+    async with connect(DB_PATH) as db:
+        data = extractor(await db.execute(statement, args))
         await db.commit()
         return data
 
 
-async def is_maker_or_recipient_of(user: UserID, wish: WishID) -> bool:
-    """True if the user is the maker or the recipient of the wish, False otherwise"""
-    data = await execute_fetchall(
-        "EXISTS(SELECT 1 FROM wishes WHERE id = ? AND (maker = ? OR recipient = ?))",
+##### READ
+
+
+async def wish(id: WishID) -> Wish:
+    data = await execute_fetchone(
+        "SELECT * FROM wishes WHERE id = ?",
+        id
+    )
+    return parse_wish(data)
+
+
+async def own_wish(user: UserID, wish: WishID) -> bool:
+    """True if (user is maker) or (user is recipient and wish not hidden)"""
+    data = await execute_fetchone(
+        "EXISTS(SELECT 1 FROM wishes WHERE id = ? AND (maker = ? OR (recipient = ? AND hidden = FALSE))",
         wish, user, user
     )
-    return data[0]
+    return data
+
+
+async def maker_of(wish: WishID) -> User:
+    data = await execute_fetchone(
+        "SELECT maker FROM wishes WHERE id = ?",
+        wish
+    )
+    return users[data['maker']]
 
 
 async def wishes_of(recipient: UserID) -> list[Wish]:
@@ -79,48 +164,56 @@ async def wishes_of(recipient: UserID) -> list[Wish]:
         "SELECT * FROM wishes WHERE recipient = ?",
         recipient
     )
-
-    return [ parse_wish(row) for row in data ]
-
+    return sorted([ parse_wish(row) for row in data ], key=lambda w:w.id)
 
 
-async def foreign_wishes_of(wishmaker: UserID) -> list[Wish]:
+async def foreign_wishes_of(maker: UserID) -> list[Wish]:
     """List the foreign wishes made by an user"""
     data = await execute_fetchall(
         "SELECT * FROM wishes WHERE maker = ? AND recipient != ?",
-        wishmaker, wishmaker
+        maker, maker
     )
+    return sorted([ parse_wish(row) for row in data ], key=lambda w:w.id)
 
-    return [ parse_wish(row) for row in data ]
+
+##### CREATE
 
 
-async def register_wish(wish: Wish) -> None:
+async def register_wish(wish: Wish) -> WishID:
     """Register a new wish"""
-    await execute_fetchall(
+    id = await execute_commit(
         "INSERT INTO wishes (recipient, maker, kind, content, hidden) VALUES (?,?,?,?,?)",
-        wish.recipient, wish.wishmaker, wish.kind, wish.content, wish.hidden
+        wish.recipient.id, wish.maker.id, wish.kind, wish.content, wish.hidden,
+        extractor = lambda c:c.lastrowid
     )
+    return id
+
+
+##### UPDATE
 
 
 async def edit_wish(wish: Wish) -> None:
     """Edit a wish"""
-    await execute_fetchall(
+    await execute_commit(
         "UPDATE wishes SET recipient = ?, kind = ?, content = ?, hidden = ? WHERE id = ?",
-        wish.recipient, wish.kind, wish.content, wish.hidden, wish.id
-    )
-
-
-async def delete_wish(wish: WishID) -> None:
-    """Delete a wish"""
-    await execute_fetchall(
-        "DELETE FROM wishes WHERE id = ?",
-        wish
+        wish.recipient.id, wish.kind, wish.content, wish.hidden, wish.id,
     )
 
 
 async def claim_wish(user: UserID, wish: WishID) -> None:
     """Claim a wish"""
-    await execute_fetchall(
+    await execute_commit(
         "UPDATE wishes SET claim = ? WHERE id = ?",
         user, wish
+    )
+
+
+##### DELETE
+
+
+async def delete_wish(wish: WishID) -> None:
+    """Delete a wish"""
+    await execute_commit(
+        "DELETE FROM wishes WHERE id = ?",
+        wish
     )

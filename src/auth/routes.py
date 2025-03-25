@@ -11,8 +11,7 @@ routes = web.RouteTableDef()
 async def renew_session(req: web.Request) -> Session:
     old = await get_session(req)
     new = await new_session(req)
-    new[skey.PASS]     = skey.PASS(old)
-    new[skey.LAST_URL] = skey.LAST_URL(old)
+    new[skey.PASS] = skey.PASS(old)
     return new
 
 
@@ -45,7 +44,7 @@ class Halt(web.View):
 
     async def get(self):
         """Halt page"""
-        return render_template('halt.html')
+        return render_template('halt.html', self.request, {})
 
     async def post(self):
         """Test password"""
@@ -57,22 +56,22 @@ class Halt(web.View):
             raise web.HTTPFound('/')
 
         session[skey.PASS] = False
-        raise web.json_response({ 'err': "Souviens-toi de la chanson, et essaie encore !" })
+        return web.json_response({ 'err': "Souviens-toi de la chanson, et essaie encore !" })
 
 
 @web.middleware
 async def halt_middleware(req: web.Request, handler):
-    """Website-wide redirect to halt page if not passed""" # currently disabled for testing
-    # if handler is Halt:
-    #     return await handler(req)
+    """Website-wide redirect to halt page if not passed"""
+    if handler is Halt:
+        return await handler(req)
 
-    # session = await get_session(req)
-    # if not skey.PASS(session):
-    #     raise web.HTTPFound('/halt')
+    session = await get_session(req)
+    if not skey.PASS(session):
+        raise web.HTTPFound('/halt')
 
     return await handler(req)
 
 
 middlewares = [
-    halt_middleware,
+    # halt_middleware, # currently disabled for testing
 ]

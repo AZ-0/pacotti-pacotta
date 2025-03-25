@@ -12,8 +12,12 @@ def authenticated(handler):
 
     async def auth_middleware(req: web.Request):
         session = await get_session(req)
-        user = db.user(session.get(skey.USER_ID))
 
+        uid = skey.USER_ID(session)
+        if uid is None:
+            raise web.HTTPFound('/login')
+
+        user = db.users.get(int(uid))
         if user is None:
             raise web.HTTPFound('/login')
 

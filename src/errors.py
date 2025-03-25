@@ -13,7 +13,7 @@ async def error_middleware(req: web.Request, handler):
     """Wraps some errors"""
     try:
         return await handler(req)
-    except (AssertionError, TypeError) as e:
+    except AssertionError as e:
         return json_error(422, '; '.join(e.args))
 
 
