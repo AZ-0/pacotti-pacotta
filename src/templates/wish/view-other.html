@@ -16,7 +16,7 @@
                 {% for wish in wishes %}
                 {{ wish.html_tag() | safe }}
                 <div class="control">
-                    {% if wish.maker == recipient %}
+                    {% if wish.maker == user %}
                     <button name="id" value="{{ wish.id }}">Modifier</button>
                     <button name="id" value="{{ wish.id }}">Supprimer</button>
                     {% endif %}
