@@ -1,0 +1,37 @@
+html, body {
+    width: 100vw;
+    min-height: 100vh;
+    height: max-content;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+
+    grid-template-columns: 1fr 9fr;
+    align-content: start;
+    justify-content: start;
+}
+
+x-navbar {
+    width: stretch;
+    height: 100vh;
+    position: sticky;
+
+    grid-column: 1;
+
+    border-right: 0.1em solid black;
+    background-color: aquamarine;
+}
+
+.main {
+    width: stretch;
+    height: stretch;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    grid-column: 2;
+
+    background-color: mistyrose;
+}

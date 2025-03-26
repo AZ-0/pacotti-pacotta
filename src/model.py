@@ -27,8 +27,15 @@ class User:
         """Converts to javascript; for use in jinja2 templating"""
         return f'new User({self.id}, {repr(self.name)}, {self.birthday})'
 
-    def html_tag(self) -> str:
-        return f'<x-user uid={self.id} bday={self.birthday} name={escape(self.name)}></x-user>'
+    def html_tag(self, disabled=False) -> str:
+        return ''.join([
+            '<x-user',
+            f' uid={self.id}',
+            f' bday={self.birthday}',
+            f' name="{escape(self.name)}"',
+            ' disabled' if disabled else '',
+            '></x-user>'
+        ])
 
 
 @dataclass
@@ -59,11 +66,11 @@ class Wish:
             '<x-wish',
             f' wishid={self.id}',
             f' kind={self.kind}',
-            f' content={escape(self.content)}',
+            f' content="{escape(self.content)}"',
             ' x-hidden' if self.hidden else '',
             '>',
-            self.recipient.html_tag(),
-            self.maker.html_tag(),
-            self.claim.html_tag() if self.claim else '',
+            self.recipient.html_tag(disabled=True),
+            self.maker.html_tag(disabled=True),
+            self.claim.html_tag(disabled=True) if self.claim else '',
             '</x-wish>'
         ])

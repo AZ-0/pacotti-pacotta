@@ -11,13 +11,15 @@
         <x-navbar>NAVBAR HERE</x-navbar>
         <div class="main">
             <h1>Le coin cadeaux</h1>
-            <h3>Mes souhaits</h3>
+            <h3>Les souhaits de {{ recipient.name }}</h3>
             <div class="wish-grid">
                 {% for wish in wishes %}
                 {{ wish.html_tag() | safe }}
                 <div class="control">
+                    {% if wish.maker == recipient %}
                     <button name="id" value="{{ wish.id }}">Modifier</button>
                     <button name="id" value="{{ wish.id }}">Supprimer</button>
+                    {% endif %}
                 </div>
                 {% endfor %}
             </div>

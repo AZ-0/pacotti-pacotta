@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS wishes (
 ) STRICT;
 """,
 """
-INSERT OR REPLACE INTO users (id,name,bday,pwd) VALUES (0,"admin",0,"pwd");
+INSERT OR REPLACE INTO users (name,bday,pwd) VALUES ("admin",0,"pwd");
 """,
 ]
 
@@ -74,6 +74,18 @@ def parse_wish(row: Row) -> Wish:
 ##### META
 
 
+async def debug_users():
+    await execute_commit('INSERT INTO users (name,bday,pwd) VALUES ("userA",42,"pwdA");')
+    await execute_commit('INSERT INTO users (name,bday,pwd) VALUES ("userB",87,"pwdB");')
+
+
+async def debug_wishes():
+    admin, userA, userB = users.values()
+    await register_wish(Wish(None,admin,admin,None,0,"admin←admin",False))
+    await register_wish(Wish(None,admin,userA,None,0,"admin←userA",False))
+    await register_wish(Wish(None,admin,userB,None,0,"admin←userB",True))
+
+
 async def startup(app: Application):
     global DB_PATH
 
@@ -85,22 +97,16 @@ async def startup(app: Application):
     await execute_many(TABLE_DEF)
     app.logger.info(f"Initialized database at {DB_PATH}")
 
+    if app[akey.DEBUG]:
+        await debug_users()
+
     for row in await execute_fetchall("SELECT * FROM users"):
         user = parse_user(row)
         users[user.id] = user
     app.logger.info(f"Loaded {len(users)} users")
 
     if app[akey.DEBUG]:
-        admin = users[0]
-        await register_wish(Wish(
-            None,
-            admin,
-            admin,
-            None,
-            0,
-            "test wish",
-            False
-        ))
+        await debug_wishes()
 
 
 async def execute_fetchall(statement: str, *args) -> Iterable[Row]:

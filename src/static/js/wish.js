@@ -2,6 +2,7 @@ class WishElement extends HTMLElement {
     get wishID () { return this.getAttribute(    'wid') }
     get kind   () { return this.getAttribute(   'kind') }
     get content() { return this.getAttribute('content') }
+    get hiddenFromRecipient() { return this.hasAttribute('x-hidden') }
 
     get foreign() { return this.recipient.uid != this.maker.uid }
 
@@ -17,10 +18,17 @@ class WishElement extends HTMLElement {
 
         this.attachShadow({ mode: 'open' });
 
-        this.shadowRoot.innerHTML = [
-            `<block part="content">${this.content}</block>`,
-            ['', `<p part="foreign">Ce souhait a été créé par ${this.maker.name}</p>`][this.foreign],
-        ].join('');
+        const parts = [
+            `<p part="content">${this.content}</p>`,
+            '<span part="warnings">',
+        ];
+        if (this.foreign)
+            parts.push(`<span part="warning"><span part="warning-sign">⚠</span> Ce souhait a été créé par ${this.maker.name}</span>`);
+        if (this.hiddenFromRecipient)
+            parts.push(`<span part="warning"><span part="warning-sign">⚠</span> ${this.recipient.name} n'est pas au courant de ce souhait</span>`);
+        parts.push('<span/>');
+
+        this.shadowRoot.innerHTML = parts.join('')
         console.log(this);
     }
 }
