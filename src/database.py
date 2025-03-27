@@ -139,18 +139,20 @@ async def execute_commit(statement: str, *args, extractor: Callable[[Cursor], T]
 ##### READ
 
 
-async def wish(id: WishID) -> Wish:
+async def wish(id: WishID) -> Wish | None:
     data = await execute_fetchone(
         "SELECT * FROM wishes WHERE id = ?",
         id
     )
+    if data is None:
+        return None
     return parse_wish(data)
 
 
 async def own_wish(user: UserID, wish: WishID) -> bool:
     """True if (user is maker) or (user is recipient and wish not hidden)"""
     data = await execute_fetchone(
-        "EXISTS(SELECT 1 FROM wishes WHERE id = ? AND (maker = ? OR (recipient = ? AND hidden = FALSE))",
+        "SELECT EXISTS(SELECT 1 FROM wishes WHERE id = ? AND (maker = ? OR (recipient = ? AND hidden = FALSE)) LIMIT 1)",
         wish, user, user
     )
     return data

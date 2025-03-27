@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
+        <!-- defer means the whole document parses before executing script -->
+        <script src="/static/js/user.js" defer></script>
+    </head>
+    <body>
+        <x-navbar>NAVBAR HERE</x-navbar>
+        <div class="main">
+            <h1>Le coin cadeaux</h1>
+            <h3>Éditeur de souhait</h3>
+            <form method="post" action="/wish/{{ action }}">
+                <select name="recipient" autocomplete="off" required>
+                    {% for uid, user in users.items() %}
+                    <option value="{{ uid }}"{% if user == wish.recipient %}selected{% endif %}>{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <select name="kind" autocomplete="off" required>
+                    <option value="0">Livre</option>
+                    <option value="1">Jeu vidéo</option>
+                </select>
+
+                <textarea name="content" autocomplete="off" required autofocus>{{ wish.content }}</textarea>
+
+                <label>
+                    <input type="checkbox" name="hidden" value="0"/>
+                    Ce souhait est une surprise.
+                </label>
+
+                <input type="hidden" name="wishid" value="{{ wish.id }}"/>
+
+                <button type="submit">Enregistrer</button>
+            </form>
+        </div>
+    </body>
+</html>

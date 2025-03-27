@@ -20,11 +20,11 @@ routes = web.RouteTableDef()
 def parse_wish(data: dict[str]):
     recipient = rkey.WISH_RECIPIENT(data)
     kind      = rkey.WISH_KIND(data)
-    hidden    = rkey.WISH_HIDDEN(hidden)
-    content   = rkey.WISH_CONTENT(content)
+    hidden    = rkey.WISH_HIDDEN(data)
+    content   = rkey.WISH_CONTENT(data)
 
-    recipient = db.users.get(recipient)
-    kind    = wishkinds.get(kind)
+    recipient = db.users.get(int(recipient))
+    kind    = wishkinds.get(int(kind))
     hidden  = bool(hidden)
     content = str(content)
 
@@ -76,7 +76,12 @@ async def view_other(req: web.Request, user: User):
 @routes.get('/wish/new')
 @authenticated
 async def new(req: web.Request, user: User):
-    return render_template('wish/editor.html', req, { 'user': user, 'new': True })
+    wish = Wish(None, user, user, None, 0, "", False)
+    return render_template('wish/editor.html', req, {
+        'wish': wish,
+        'users': db.users,
+        'action': 'new'
+    })
 
 
 @routes.post('/wish/new')
@@ -110,7 +115,11 @@ async def edit(req: web.Request, user: User):
         raise web.HTTPForbidden(text="Tu n'as pas la permission de modifie ce souhait !")
 
     wish = await db.wish(wishid)
-    return render_template('wish/editor.html', req, { 'user': user, 'new': False, 'wish': wish })
+    return render_template('wish/editor.html', req, {
+        'wish': wish,
+        'users': db.users,
+        'action': 'edit'
+    })
 
 
 @routes.post('/wish/edit')

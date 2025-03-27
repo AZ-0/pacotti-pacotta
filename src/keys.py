@@ -9,18 +9,23 @@ class Key(StrEnum):
 
 
 class SessionKey(Key):
-    PASS     = 'pass'
+    HALTPASS = 'haltpass'
+    URL = 'url'
     USER_ID  = 'uid'
 
 
 class RequestKey(Key):
     PASSWORD       = 'pwd'
-    WISH_CONTENT   = 'wishcontent'
+    WISH_CONTENT   = 'content'
     WISH_ID        = 'wishid'
-    WISH_HIDDEN    = 'wishhidden'
-    WISH_KIND      = 'wishkind'
-    WISH_RECIPIENT = 'wishrecipient'
+    WISH_HIDDEN    = 'hidden'
+    WISH_KIND      = 'kind'
+    WISH_RECIPIENT = 'recipient'
 
 
 class AppKey(Key):
     DEBUG = 'debug'
+
+class MsgKey(Key):
+    INCORRECT_HALTPASS = 'incorrect-haltpass'
+    INCORRECT_PASSWORD = 'incorrect-password'

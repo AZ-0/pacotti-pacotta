@@ -23,19 +23,18 @@ class User:
     def __eq__(self, other) -> bool:
         return isinstance(other, User) and other.id == self.id
 
-    def js(self) -> str:
-        """Converts to javascript; for use in jinja2 templating"""
-        return f'new User({self.id}, {repr(self.name)}, {self.birthday})'
+    def html_tag(self, *classes, **kwclasses) -> str:
+        kwclasses = ' '.join(f'{cls}={val}' for cls,val in kwclasses.items())
+        classes = ' '.join(classes)
 
-    def html_tag(self, disabled=False) -> str:
-        return ''.join([
+        return ' '.join([
             '<x-user',
-            f' uid={self.id}',
-            f' bday={self.birthday}',
-            f' name="{escape(self.name)}"',
-            ' disabled' if disabled else '',
-            '></x-user>'
-        ])
+            f'uid={self.id}',
+            f'bday={self.birthday}',
+            f'name="{escape(self.name)}"',
+            kwclasses,
+            classes,
+        ]) + '></x-user>'
 
 
 @dataclass
@@ -55,22 +54,19 @@ class Wish:
     def __eq__(self, other) -> bool:
         return isinstance(other, User) and other.id == self.id
 
-    def js(self) -> str:
-        """Converts to javascript; for use in jinja2 templating"""
-        claim  = 'null' if self.claim is None else self.claim.js()
-        hidden = str(self.hidden).lower()
-        return f'new Wish({self.id}, {self.recipient.js()}, {self.maker.js()}, {claim}, {self.kind}, {repr(self.content)}, {hidden})'
-
     def html_tag(self) -> str:
-        return ''.join([
+        parts = [
             '<x-wish',
-            f' wishid={self.id}',
-            f' kind={self.kind}',
-            f' content="{escape(self.content)}"',
-            ' x-hidden' if self.hidden else '',
+            f'wishid={self.id}',
+            f'kind={self.kind}',
+            f'content="{escape(self.content)}"',
+        ]
+        if self.hidden:
+            parts.append('x-hidden')
+        return ' '.join(parts) + ''.join([
             '>',
-            self.recipient.html_tag(disabled=True),
-            self.maker.html_tag(disabled=True),
-            self.claim.html_tag(disabled=True) if self.claim else '',
+            self.recipient.html_tag('disabled'),
+            self.maker.html_tag('disabled'),
+            self.claim.html_tag('disabled') if self.claim else '',
             '</x-wish>'
         ])

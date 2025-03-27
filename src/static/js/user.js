@@ -10,6 +10,14 @@ class UserElement extends HTMLElement {
             this.removeAttribute('disabled');
             return;
         }
+
+        this.attachShadow({ mode: 'open' });
+
+        const parts = [
+            `<span part="name">${this.name}</span>`
+        ]
+
+        this.shadowRoot.innerHTML = parts.join('');
     }
 }
 

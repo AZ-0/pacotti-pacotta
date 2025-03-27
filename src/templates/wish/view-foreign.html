@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="/script/wish.js"></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
+        <!-- defer means the whole document parses before executing script -->
+        <script src="/static/js/user.js" defer></script>
+        <script src="/static/js/wish.js" defer></script>
     </head>
     <body>
-        <h1>Le coin cadeaux</h1>
-        <h3>Les souhaits que j'ai créé pour quelqu'un d'autre</h3>
-
-        {% for wish in wishes %}
-            <x-wish wid="{{ wish.id }}" recipient="{{ wish.recipient.name }}" kind="{{ wish.kind }}" hidden="{{ wish.hidden }}">{{ wish.content }}</x-wish>
-        {% endfor %}
-
-        <p>
-            <b>Compte (id {{ user.id }}):</b> {{ user.name }} (né.e le {{ user.birthday }})
-        </p>
+        <x-navbar>NAVBAR HERE</x-navbar>
+        <div class="main">
+            <h1>Le coin cadeaux</h1>
+            <h3>Les souhaits que j'ai créé pour quelqu'un d'autre</h3>
+            <div class="wish-grid" showrecipients>
+                {% for wish in wishes %}
+                {{ wish.recipient.html_tag('recipient', wishid=wish.id) | safe }}
+                {{ wish.html_tag() | safe }}
+                <div class="control" wishid="{{ wish.id }}">
+                    <button class="modify">Modifier</button>
+                    <button class="delete">Supprimer</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
     </body>
 </html>

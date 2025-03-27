@@ -2,17 +2,17 @@ from aiohttp_session import Session, get_session, new_session
 from aiohttp_jinja2 import render_template
 from aiohttp import web
 
-from ..keys import SessionKey as skey, RequestKey as rkey
+from ..keys import SessionKey as skey, RequestKey as rkey, MsgKey as msg
 from .. import database as db
 
 routes = web.RouteTableDef()
 
 
-async def renew_session(req: web.Request) -> Session:
+async def renew_session(req: web.Request) -> tuple[Session,Session]:
     old = await get_session(req)
     new = await new_session(req)
-    new[skey.PASS] = skey.PASS(old)
-    return new
+    new[skey.HALTPASS] = skey.HALTPASS(old)
+    return old, new
 
 
 @routes.view('/login')
@@ -25,18 +25,22 @@ class Login(web.View):
         data = await self.request.post()
         user = db.user_from_password(rkey.PASSWORD(data))
 
-        if user is not None:
-            session = await renew_session(self.request)
-            session[skey.USER_ID] = user.id
-            return web.json_response({ 'msg': f'Bienvenue, {user.name} !' })
+        if user is None:
+            raise web.HTTPUnauthorized(reason=msg.INCORRECT_PASSWORD)
 
-        return web.json_response({ 'err': "Mot de passe incorrect." })
+        old, session = await renew_session(self.request)
+        session[skey.USER_ID] = user.id
+
+        if (url := old.pop(skey.URL, None)) is None:
+            return web.json_response({})
+
+        return web.json_response({ 'url': url })
 
 
 @routes.post('/logout')
 async def logout(req: web.Request):
     await renew_session(req)
-    return web.json_response({ 'msg': "Déconnecté !" })
+    return web.json_response({})
 
 
 @routes.view('/halt')
@@ -52,11 +56,11 @@ class Halt(web.View):
         data = await self.request.post()
 
         if rkey.PASSWORD(data) == 'llqepsv':
-            session[skey.PASS] = True
-            raise web.HTTPFound('/')
+            session[skey.HALTPASS] = True
+            return web.json_response({})
 
-        session[skey.PASS] = False
-        return web.json_response({ 'err': "Souviens-toi de la chanson, et essaie encore !" })
+        session[skey.HALTPASS] = False
+        raise web.HTTPUnauthorized(reason=msg.INCORRECT_HALTPASS)
 
 
 @web.middleware
@@ -66,8 +70,8 @@ async def halt_middleware(req: web.Request, handler):
         return await handler(req)
 
     session = await get_session(req)
-    if not skey.PASS(session):
-        raise web.HTTPFound('/halt')
+    if not skey.HALTPASS(session):
+        raise web.HTTPSeeOther('/halt')
 
     return await handler(req)
 

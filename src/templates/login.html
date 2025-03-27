@@ -2,9 +2,32 @@
 <html>
     <body>
         <h1>Connexion</h1>
-        <form action="/login" method="post">
+        <form id="loginform" action="/login" method="post">
             <label for="pwd">Mot de passe:</label>
-            <input type="password" id="pwd" name="pwd"/>
+            <input type="password" id="pwd" name="pwd" autofocus required/>
+            <p id="err"></p>
         </form>
     </body>
+    <script>
+        const form = document.getElementById('loginform');
+        const err = document.getElementById('err');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const response = await fetch('/login', { method: 'POST', body: new FormData(form) });
+            const data = await response.json();
+
+            if (!response.ok) {
+                err.innerText = data['err']
+                return;
+            }
+
+            if (data['url'] != null) {
+                location.assign(data['url']);
+                return;
+            }
+
+            history.back();
+        });
+    </script>
 </html>

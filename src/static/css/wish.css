@@ -1,6 +1,6 @@
 x-wish {
     width: 100%;
-    height: 100%;
+    height: max-content;
     display: block grid;
 
     grid-template-rows: auto auto;
@@ -22,21 +22,19 @@ x-wish::part(content) {
 }
 
 x-wish::part(warnings) {
-    width: auto;
-    height: auto;
+    width: max-content;
+    height: max-content;
     margin: 0;
     padding: 0;
-    display: inline;
-
-    white-space: nowrap;
+    display: inline-block;
 }
 
 x-wish::part(warning) {
     width: fit-content;
     height: fit-content;
-    margin: 0.2em 0 0 1em;
+    margin: 0em 0 0 1em;
     padding: 0;
-    display: inline;
+    display: inline-block;
 
     color: red;
     font-style: italic;
@@ -50,10 +48,11 @@ x-wish::part(warning-sign) {
 
 
 .wish-grid {
-    width: stretch;
+    width: 100%;
     height: max-content;
     display: grid;
 
+    grid-template-areas: "W C";
     grid-template-columns: 1fr max-content;
     column-gap: 1em;
     row-gap: 1.2em;
@@ -63,8 +62,17 @@ x-wish::part(warning-sign) {
     justify-content: start;
 }
 
+.wish-grid[showrecipients] {
+    grid-template-areas: "R W C";
+    grid-template-columns: max-content 1fr max-content;
+}
+
+.wish-grid .recipient {
+    grid-area: "R";
+}
+
 .wish-grid x-wish {
-    grid-column: 1;
+    grid-area: "W";
 }
 
 .wish-grid x-wish::part(warnings) {
@@ -72,6 +80,6 @@ x-wish::part(warning-sign) {
 }
 
 .wish-grid .control {
-    grid-column: 2;
+    grid-area: "C";
     place-self: center;
 }

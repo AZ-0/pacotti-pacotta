@@ -15,7 +15,7 @@ body {
 }
 
 x-navbar {
-    width: stretch;
+    width: 100%;
     height: 100vh;
     position: sticky;
 
@@ -25,9 +25,15 @@ x-navbar {
     background-color: aquamarine;
 }
 
+x-user {
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+
 .main {
-    width: stretch;
-    height: stretch;
+    width: auto;
+    min-height: 100%;
     padding-left: 1em;
     padding-right: 1em;
 

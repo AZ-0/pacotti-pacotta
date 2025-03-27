@@ -15,9 +15,9 @@
             <div class="wish-grid">
                 {% for wish in wishes %}
                 {{ wish.html_tag() | safe }}
-                <div class="control">
-                    <button name="id" value="{{ wish.id }}">Modifier</button>
-                    <button name="id" value="{{ wish.id }}">Supprimer</button>
+                <div class="control" wishid="{{ wish.id }}">
+                    <button class="modify">Modifier</button>
+                    <button class="delete">Supprimer</button>
                 </div>
                 {% endfor %}
             </div>
