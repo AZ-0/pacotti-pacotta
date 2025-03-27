@@ -3,7 +3,6 @@
     <head>
         <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
         <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
-        <!-- defer means the whole document parses before executing script -->
         <script src="/static/js/user.js" defer></script>
         <script src="/static/js/wish.js" defer></script>
     </head>
@@ -12,6 +11,7 @@
         <div class="main">
             <h1>Le coin cadeaux</h1>
             <h3>Mes souhaits</h3>
+
             <div class="wish-grid">
                 {% for wish in wishes %}
                 {{ wish.html_tag() | safe }}
@@ -21,6 +21,13 @@
                 </div>
                 {% endfor %}
             </div>
+
+            <ul>
+                <li><a href="/wish/new">Nouveau souhait</a></li>
+                <li><a href="/wish/view/self">Consulter mes souhaits</a></li>
+                <li><a href="/wish/view/foreign">Consulter les souhaits que j'ai créé pour quelqu'un d'autre</a></li>
+                <li><a href="/wish/view/other">Consulter les souhaits de quelqu'un d'autre</a></li>
+            </ul>
         </div>
     </body>
 </html>

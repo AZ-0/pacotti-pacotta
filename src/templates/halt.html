@@ -1,9 +1,13 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <script src="/static/js/auth.js" defer></script>
+    </head>
     <body>
         <h1>Halte ! Quel est le mot de passe ?</h1>
-        <form action="/halt" method="post">
-            <input type="password" id="pwd" name="pwd" autofocus/>
+        <form id="authform" action="/halt" method="post">
+            <input type="password" name="pwd" autofocus required/>
+            <p id="err"></p>
         </form>
     </body>
 </html>

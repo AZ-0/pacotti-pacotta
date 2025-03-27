@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
+        <script src="/static/js/user.js" defer></script>
+    </head>
     <body>
-        <h1>Le coin cadeaux</h1>
-        <h3>De qui veux-tu consulter les souhaits ?</h3>
+        <x-navbar></x-navbar>
+        <div class="main">
+            <h1>Le coin cadeaux</h1>
+            <h3>De qui veux-tu consulter les souhaits ?</h3>
 
-        <form id="form">
-            <select id="user" autofocus required>
-                {% for uid, user in users.items() %}
-                <option value="{{ uid }}">{{ user.name }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Go!</button>
-        </form>
+            <form id="form">
+                <select id="user" autofocus required>
+                    {% for uid, user in users.items() %}
+                    <option value="{{ uid }}">{{ user.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Go!</button>
+            </form>
 
-        <p>
-            <b>Compte (id {{ user.id }}):</b> {{ user.name }} (né.e le {{ user.birthday }})
-        </p>
+            <ul>
+                <li><a href="/wish/new">Nouveau souhait</a></li>
+                <li><a href="/wish/view/self">Consulter mes souhaits</a></li>
+                <li><a href="/wish/view/foreign">Consulter les souhaits que j'ai créé pour quelqu'un d'autre</a></li>
+                <li><a href="/wish/view/other">Consulter les souhaits de quelqu'un d'autre</a></li>
+            </ul>
+        </div>
     </body>
     <script>
         const form = document.getElementById('form')

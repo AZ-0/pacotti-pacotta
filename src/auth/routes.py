@@ -31,10 +31,9 @@ class Login(web.View):
         old, session = await renew_session(self.request)
         session[skey.USER_ID] = user.id
 
-        if (url := old.pop(skey.URL, None)) is None:
-            return web.json_response({})
-
-        return web.json_response({ 'url': url })
+        if (url := old.pop(skey.URL, None)):
+            return web.json_response({ 'url': url })
+        return web.json_response({})
 
 
 @routes.post('/logout')
@@ -52,30 +51,34 @@ class Halt(web.View):
 
     async def post(self):
         """Test password"""
-        session = await new_session(self.request)
         data = await self.request.post()
+        old, session = await renew_session(self.request)
 
-        if rkey.PASSWORD(data) == 'llqepsv':
-            session[skey.HALTPASS] = True
-            return web.json_response({})
+        session[skey.HALTPASS] = haltpass = rkey.PASSWORD(data) == 'llqepsv'
 
-        session[skey.HALTPASS] = False
-        raise web.HTTPUnauthorized(reason=msg.INCORRECT_HALTPASS)
+        if not haltpass:
+            raise web.HTTPUnauthorized(reason=msg.INCORRECT_HALTPASS)
+
+        if (url := old.pop(skey.URL, None)):
+            return web.json_response({ 'url': url })
+        return web.json_response({})
 
 
 @web.middleware
 async def halt_middleware(req: web.Request, handler):
     """Website-wide redirect to halt page if not passed"""
-    if handler is Halt:
+    if handler is Halt or req.path.startswith('/static/') or req.path == '/favicon.ico':
         return await handler(req)
 
     session = await get_session(req)
     if not skey.HALTPASS(session):
-        raise web.HTTPSeeOther('/halt')
+        if req.method == 'GET':
+            session[skey.URL] = req.path_qs
+        raise web.HTTPFound('/halt')
 
     return await handler(req)
 
 
 middlewares = [
-    # halt_middleware, # currently disabled for testing
+    halt_middleware, # currently disabled for testing
 ]
