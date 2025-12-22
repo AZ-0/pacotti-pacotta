@@ -6,7 +6,7 @@ from jinja2 import FileSystemLoader
 import logging
 import os
 
-from . keys import AppKey as akey
+from .keys import AppKey as akey
 from . import database as db
 from . import segments
 from . import errors
