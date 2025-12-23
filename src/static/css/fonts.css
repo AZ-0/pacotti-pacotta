@@ -1,0 +1,19 @@
+@font-face {
+    font-family: 'AntonSC';
+    src: url('/static/font/AntonSC-Regular.woff') format('woff'),
+         url('/static/font/AntonSC-Regular.ttf')  format('truetype');
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url('/static/font/Nunito-VariableFont_wght.woff') format('woff'),
+         url('/static/font/Nunito-VariableFont_wght.ttf')  format('truetype');
+}
+
+* {
+    font-family: Nunito;
+}
+
+.titletext {
+    font-family: AntonSC;
+}

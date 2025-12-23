@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="/static/js/auth.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/fonts.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/css/halt.css"/>
+    </head>
+    <body>
+        <div id="splash">
+            <img id="logo" src="static/img/logo-orange.png"/>
+            <p id="title" class="titletext">PACOTTI<br/>PACOTTA</p>
+        </div>
+        <div id="authdiv">
+            <h1 id="prompt">{{prompt}}</h1>
+            <form id="authform" action="/{{action}}" method="post">
+                <input type="password" name="pwd" autofocus required/>
+                <p id="err"></p>
+            </form>
+        </div>
+    </body>
+</html>

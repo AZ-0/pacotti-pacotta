@@ -1,0 +1,44 @@
+body {
+    text-align: center;
+    padding-left: 25vw;
+    padding-right: 25vw;
+}
+
+#splash {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50vw;
+    height: 20vh;
+    position: absolute;
+    top: 20vh;
+}
+
+#logo {
+    height: 20vh;
+}
+
+#title {
+    font-size: 10vh;
+    line-height: 1em;
+}
+
+#authdiv {
+    color: #8D8FB6;
+    bottom: 30vh;
+    display: block;
+    width: 50vw;
+    position: absolute;
+    bottom: 30vh;
+}
+
+#authform input {
+    border: 3px solid orange;
+    border-radius: 30px;
+    width: 50vw;
+    text-align: center;
+}
+
+#err {
+    color: red;
+}

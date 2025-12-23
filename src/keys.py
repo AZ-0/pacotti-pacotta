@@ -10,7 +10,7 @@ class Key(StrEnum):
 
 class SessionKey(Key):
     HALTPASS = 'haltpass'
-    URL = 'url'
+    HALTED = 'halted'
     USER_ID  = 'uid'
 
 
@@ -27,5 +27,5 @@ class AppKey(Key):
     DEBUG = 'debug'
 
 class MsgKey(Key):
-    INCORRECT_HALTPASS = 'incorrect-haltpass'
-    INCORRECT_PASSWORD = 'incorrect-password'
+    INCORRECT_HALTPASS = "Ce n'est pas le bon mot de passe ! Souviens toi de la chanson, et essaie encore."
+    INCORRECT_PASSWORD = "Je ne connais pas ce mot de passe..."
