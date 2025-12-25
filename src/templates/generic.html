@@ -2,8 +2,7 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
-        <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
-        
+        <link rel="stylesheet" type="text/css" href="/static/css/{{ style }}.css"/>
     </head>
     <body>
         <ul class="header">
@@ -13,16 +12,16 @@
         </ul>
         <div class="page">
             <ul class="menu">
-                {% for key, option in menu.items() %}
-                <li><a href="/wish/{{key}}"{% if key == menuactive %} class="active"{% endif %}>{{option}}</a></li>
-                {% endfor %}
+                <li><a href="/wish/new"{% if active = "new" %} class="active"{% endif %}>Nouveau souhait</a></li>
+                <li><a href="/wish/view/self"{% if active = "self" %} class="active"{% endif %}>Consulter mes souhaits</a></li>
+                <li><a href="/wish/view/other"{% if active = "other" %} class="active"{% endif %}>Consulter les souhaits de quelqu'un d'autre</a></li>
+                <li><a href="/wish/view/foreign"{% if active = "foreign" %} class="active"{% endif %}>Consulter les souhaits que j'ai créé pour quelqu'un d'autre</a></li>
             </ul>
             <div class="main">
                 <div class="subheader">
                     <h1 class="title">Le coin cadeau</h1>
                     <p class="subtitle">Un souhait est un espoir, pas une promesse...</p>
                 </div>
-                
             </div>
         </div>
     </body>

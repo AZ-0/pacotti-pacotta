@@ -1,4 +1,4 @@
-.main {
+.page {
     margin: 0;
     list-style-type: none;
     background-color: white;
@@ -13,19 +13,16 @@
     align-items: flex-start;
     align-content: flex-start;
     gap: 5vw 5vh;
-
-    height: 100%;
-    width: 100vw;
 }
 
-.main li a {
+.page > li > a {
     display: block;
     color: black;
     text-decoration: none;
     text-align: center;
 }
 
-.main li a div {
+.page > li > a > div {
     border: 3px solid #8D8FB6;
     border-radius: 30px;
     height: 10vw;
@@ -33,7 +30,7 @@
     padding: 1vw;
 }
 
-.main li a div img {
+.page > li > a > div > img {
     max-width: 100%;
     max-height: 100%;
 }

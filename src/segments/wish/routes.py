@@ -6,6 +6,17 @@ from ... auth import authenticated
 from ... keys import RequestKey as rkey
 from ... import database as db
 
+
+BASIC_CONTEXT = {
+    "menu" : {
+        "new" : "Nouveau souhait",
+        "view/self" : "Consulter mes souhaits",
+        "view/other" : "Consulter les souhaits de quelqu'un d'autre",
+        "view/foreign" : "Consulter les souhaits que j'ai créé pour quelqu'un d'autre",
+    }
+}
+
+
 routes = web.RouteTableDef()
 
 # wishs:
@@ -36,27 +47,42 @@ def parse_wish(data: dict[str]):
 @routes.get('/wish')
 @authenticated
 async def wish_home(req: web.Request, user: User):
-    return render_template('wish/index.html', req, { 'user': user })
+    return render_template('wish/index.html', req, BASIC_CONTEXT | {
+        'user': user,
+    })
 
 
 @routes.get('/wish/view/self')
 @authenticated
 async def view_self(req: web.Request, user: User):
     wishes = [ wish for wish in await db.wishes_of(user.id) if not wish.hidden ]
-    return render_template('wish/view-self.html', req, { 'user': user, 'wishes': wishes })
+    return render_template('wish/view-self.html', req, BASIC_CONTEXT | {
+        'user': user,
+        'wishes': wishes,
+        'menuactive': 'view/self',
+    })
 
 
 @routes.get('/wish/view/foreign')
 @authenticated
 async def view_foreign(req: web.Request, user: User):
     wishes = await db.foreign_wishes_of(user.id)
-    return render_template('wish/view-foreign.html', req, { 'user': user, 'wishes': wishes })
+    return render_template('wish/view-foreign.html', req, BASIC_CONTEXT | {
+        'user': user,
+        'users': db.users,
+        'wishes': wishes,
+        'menuactive': 'view/foreign',
+    })
 
 
 @routes.get('/wish/view/other')
 @authenticated
 async def view_other(req: web.Request, user: User):
-    return render_template('wish/view-other-select.html', req, { 'user': user, 'users': db.users })
+    return render_template('wish/view-other-select.html', req, BASIC_CONTEXT | {
+        'user': user,
+        'users': db.users,
+        'menuactive': 'view/other',
+    })
 
 
 @routes.get('/wish/view/{id:\d+}')
@@ -70,17 +96,24 @@ async def view_other(req: web.Request, user: User):
     assert recipient is not None
 
     wishes = await db.wishes_of(recipient.id)
-    return render_template('wish/view-other.html', req, { 'user': user, 'recipient': recipient, 'wishes': wishes })
+    return render_template('wish/view-other.html', req, BASIC_CONTEXT | {
+        'user': user,
+        'users': db.users,
+        'recipient': recipient,
+        'wishes': wishes,
+        'menuactive': 'view/other'
+    })
 
 
 @routes.get('/wish/new')
 @authenticated
 async def new(req: web.Request, user: User):
-    wish = Wish(None, user, user, None, 0, "", False)
-    return render_template('wish/editor.html', req, {
+    wish = Wish(None, user, user, None, 0, "", False, None)
+    return render_template('wish/editor.html', req, BASIC_CONTEXT | {
         'wish': wish,
         'users': db.users,
-        'action': 'new'
+        'action': 'new',
+        'menuactive': 'new',
     })
 
 
@@ -95,10 +128,11 @@ async def new(req: web.Request, user: User):
         id=None,
         recipient=recipient,
         maker=user,
-        claim=None,
+        claimant=None,
         kind=kind,
         content=content,
         hidden=hidden,
+        date=None,
     ))
 
     if wish.foreign:
@@ -115,10 +149,11 @@ async def edit(req: web.Request, user: User):
         raise web.HTTPForbidden(text="Tu n'as pas la permission de modifie ce souhait !")
 
     wish = await db.wish(wishid)
-    return render_template('wish/editor.html', req, {
+    return render_template('wish/editor.html', req, BASIC_CONTEXT | {
         'wish': wish,
         'users': db.users,
-        'action': 'edit'
+        'action': 'edit',
+        'menuactive': 'view/foreign' if wish.foreign else 'view/self',
     })
 
 
@@ -136,10 +171,11 @@ async def edit(req: web.Request, user: User):
         id=wishid,
         recipient=recipient,
         maker=user,
-        claim=None,
+        claimant=None,
         kind=kind,
         content=content,
         hidden=hidden,
+        date=None,
     ))
 
     if wish.foreign:

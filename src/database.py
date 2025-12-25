@@ -24,15 +24,16 @@ CREATE TABLE IF NOT EXISTS wishes (
     id        INTEGER NOT NULL,
     recipient INTEGER NOT NULL,
     maker     INTEGER NOT NULL,
-    claim     INTEGER,
+    claimant   INTEGER,
     kind      INTEGER NOT NULL,
     content   TEXT    NOT NULL,
     hidden    INT     NOT NULL,
+    date      INTEGER NOT NULL,
 
     PRIMARY KEY(id),
     FOREIGN KEY(recipient) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY(maker)     REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY(claim)     REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY(claimant)  REFERENCES users(id) ON DELETE SET NULL
 ) STRICT;
 """,
 """
@@ -60,15 +61,18 @@ def parse_user(row: Row) -> User:
 
 
 def parse_wish(row: Row) -> Wish:
-    return Wish(
+    wish = Wish(
         id = row[0],
         recipient = users[row[1]],
         maker     = users[row[2]],
-        claim     = users.get(row[3]),
+        claimant  = users.get(row[3]),
         kind    = WishKind(row[4]),
         content = row[5],
-        hidden  = bool(row[6])
+        hidden  = bool(row[6]),
+        date = row[7],
     )
+    print(f"Parsed wish {wish.content}. Claimant {wish.claimant}")
+    return wish
 
 
 ##### META
@@ -81,9 +85,9 @@ async def debug_users():
 
 async def debug_wishes():
     admin, userA, userB = users.values()
-    await register_wish(Wish(None,admin,admin,None,0,"admin←admin",False))
-    await register_wish(Wish(None,admin,userA,None,0,"admin←userA",False))
-    await register_wish(Wish(None,admin,userB,None,0,"admin←userB",True))
+    await register_wish(Wish(None,admin,admin,userA,0,"admin←admin",False,48646))
+    await register_wish(Wish(None,admin,userA,None,1,"admin←userA",False,45352))
+    await register_wish(Wish(None,admin,userB,userB,0,"admin←userB",True,35435))
 
 
 async def startup(app: Application):
@@ -110,16 +114,19 @@ async def startup(app: Application):
 
 
 async def execute_fetchall(statement: str, *args) -> Iterable[Row]:
+    '''Read all, no commitment.'''
     async with connect(DB_PATH) as db:
         return await db.execute_fetchall(statement, args)
 
 
 async def execute_fetchone(statement: str, *args) -> Row:
+    '''Read one, no commitment.'''
     async with connect(DB_PATH) as db:
         return await (await db.execute(statement, args)).fetchone()
 
 
 async def execute_many(statements: Iterable[str]) -> None:
+    '''Perform statements, then commit.'''
     async with connect(DB_PATH) as db:
         for statement in statements:
             await db.execute(statement)
@@ -190,9 +197,9 @@ async def foreign_wishes_of(maker: UserID) -> list[Wish]:
 async def register_wish(wish: Wish) -> WishID:
     """Register a new wish"""
     id = await execute_commit(
-        "INSERT INTO wishes (recipient, maker, kind, content, hidden) VALUES (?,?,?,?,?)",
-        wish.recipient.id, wish.maker.id, wish.kind, wish.content, wish.hidden,
-        extractor = lambda c:c.lastrowid
+        "INSERT INTO wishes (recipient, maker, claimant, kind, content, hidden, date) VALUES (?,?,?,?,?,?,?)",
+        wish.recipient.id, wish.maker.id, wish.claimant_id, wish.kind, wish.content, wish.hidden, wish.date,
+        extractor = lambda c: c.lastrowid
     )
     return id
 

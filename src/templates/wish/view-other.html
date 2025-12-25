@@ -3,33 +3,63 @@
     <head>
         <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
         <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
-        <script src="/static/js/user.js" defer></script>
         <script src="/static/js/wish.js" defer></script>
     </head>
     <body>
-        <x-navbar>NAVBAR HERE</x-navbar>
-        <div class="main">
-            <h1>Le coin cadeaux</h1>
-            <h3>Les souhaits de {{ recipient.name }}</h3>
-
-            <div class="wish-grid">
-                {% for wish in wishes %}
-                {{ wish.html_tag() | safe }}
-                <div class="control" wishid="{{ wish.id }}">
-                    {% if wish.maker == user %}
-                    <button class="modify">Modifier</button>
-                    <button class="delete">Supprimer</button>
-                    {% endif %}
-                </div>
+        <ul class="header">
+            <li><a href="/"><img src="/static/img/logo-white.png"/></a></li>
+            <li><a href="/">accueil</a></li>
+            <li><a href="/wish">coin cadeau</a></li>
+        </ul>
+        <div class="page">
+            <ul class="menu">
+                {% for key, option in menu.items() %}
+                <li><a href="/wish/{{key}}"{% if key == menuactive %} class="active"{% endif %}>{{option}}</a></li>
                 {% endfor %}
-            </div>
-
-            <ul>
-                <li><a href="/wish/new">Nouveau souhait</a></li>
-                <li><a href="/wish/view/self">Consulter mes souhaits</a></li>
-                <li><a href="/wish/view/foreign">Consulter les souhaits que j'ai créé pour quelqu'un d'autre</a></li>
-                <li><a href="/wish/view/other">Consulter les souhaits de quelqu'un d'autre</a></li>
             </ul>
+            <div class="main">
+                <div class="subheader">
+                    <h1 class="title">Les souhaits de {{ recipient.name }}</h1>
+                    <p class="subtitle">Allons jeter un coup d'oeil ! 🛸</p>
+                </div>
+                <div class="wish-grid">
+                    {% for wish in wishes %}
+                    {% if not (False and wish.hidden) %}
+                    <div class="wish{% if (True and wish.foreign) or wish.hidden %} warning{% endif %}">
+                        <h4 class="date">Créé le {{ wish.date_str() }}</h4>
+                        <p class="kind">{{ wish.kind }}</p>
+                        
+                        <div class="claim">
+                            <p>Pris en charge par</p>
+                            <select wishid="{{ wish.id }}"{% if wish.claimant %} class="claimed"{% endif %} autocomplete="off">
+                                <option value="-1">Aucun</option>
+                                {% if wish.claimant %}
+                                <option value="{{ wish.claimant.id }}" selected{% if user.id != wish.claimant.id %} disabled hidden{% endif %}>{{ wish.claimant.name }}</option>
+                                {% endif %}
+                                {% if user.id != wish.claimant_id %}
+                                <option value="{{ user.id }}">{{ user.name }}</option>
+                                {% endif %}
+                            </select>
+                        </div>
+                        {% if wish.foreign %}
+                        <p class="warning">
+                            Ce souhait est proposé par {{ wish.maker.name }}{% if wish.hidden %} — c'est une surprise !{% endif %}
+                        </p>
+                        {% endif %}
+                        <p class="content">
+                            {{ wish.content }}
+                        </p>
+                    </div>
+                    <div class="control" wishid="{{ wish.id }}">
+                        {% if wish.owned_by(user.id) %}
+                        <button class="modify">Modifier</button>
+                        <button class="delete">Supprimer</button>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </body>
 </html>

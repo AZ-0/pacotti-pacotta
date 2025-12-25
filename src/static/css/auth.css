@@ -39,6 +39,10 @@ body {
     text-align: center;
 }
 
+#authform input:focus {
+    outline: none;
+}
+
 #err {
     color: red;
 }

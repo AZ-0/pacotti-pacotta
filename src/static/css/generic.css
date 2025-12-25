@@ -1,27 +1,38 @@
 @import url('/static/css/fonts.css');
 
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+body {
+    display: flex;
+    flex-flow: column nowrap;
+}
+
 .header {
+    flex: 0 1 auto;
+
     margin: 0;
     list-style-type: none;
     background-color: #FF5825;
     padding-left: 15px;
+
     display: flex;
-    flex-direction: row;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
     align-items: center;
 }
 
-.header li a {
+.header > li > a {
     display: block;
     padding: 15px 15px;
     color: white;
     text-decoration: none;
 }
 
-.navbar {
-    background-color: #EEEEF3;
-    color: black;
-}
-
-html, body {
-    margin: 0
+.page {
+    flex: 1 1 auto;
 }
