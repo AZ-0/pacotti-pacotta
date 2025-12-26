@@ -21,6 +21,7 @@ body {
 #title {
     font-size: 10vh;
     line-height: 1em;
+    text-align: left;
 }
 
 #authdiv {

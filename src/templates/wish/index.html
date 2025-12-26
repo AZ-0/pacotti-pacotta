@@ -6,18 +6,19 @@
         
     </head>
     <body>
-        <ul class="header">
-            <li><a href="/"><img src="/static/img/logo-white.png"/></a></li>
-            <li><a href="/">accueil</a></li>
-            <li><a href="/wish">coin cadeau</a></li>
-        </ul>
+        <div class="header">
+            <a href="/"><img src="/static/img/logo-white.png"/></a>
+            <a href="/">Accueil</a>
+            <a href="/wish">Coin cadeaux</a>
+            <a class="log" href="/{% if user %}logout">Déconnexion{% else %}login">Connexion{% endif %}</a>
+        </div>
         <div class="page">
             <ul class="menu">
                 {% for key, option in menu.items() %}
                 <li><a href="/wish/{{key}}"{% if key == menuactive %} class="active"{% endif %}>{{option}}</a></li>
                 {% endfor %}
             </ul>
-            <div class="main">
+            <div class="main" userID={{ user.id }}>
                 <div class="subheader">
                     <h1 class="title">Le coin cadeau</h1>
                     <p class="subtitle">Un souhait est un espoir, pas une promesse...</p>

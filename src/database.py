@@ -218,7 +218,7 @@ async def edit_wish(wish: Wish) -> None:
 async def claim_wish(user: UserID, wish: WishID) -> None:
     """Claim a wish"""
     await execute_commit(
-        "UPDATE wishes SET claim = ? WHERE id = ?",
+        "UPDATE wishes SET claimant = ? WHERE id = ?",
         user, wish
     )
 

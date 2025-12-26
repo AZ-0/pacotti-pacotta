@@ -47,9 +47,7 @@ def parse_wish(data: dict[str]):
 @routes.get('/wish')
 @authenticated
 async def wish_home(req: web.Request, user: User):
-    return render_template('wish/index.html', req, BASIC_CONTEXT | {
-        'user': user,
-    })
+    return render_template('wish/index.html', req, BASIC_CONTEXT)
 
 
 @routes.get('/wish/view/self')
@@ -57,7 +55,6 @@ async def wish_home(req: web.Request, user: User):
 async def view_self(req: web.Request, user: User):
     wishes = [ wish for wish in await db.wishes_of(user.id) if not wish.hidden ]
     return render_template('wish/view-self.html', req, BASIC_CONTEXT | {
-        'user': user,
         'wishes': wishes,
         'menuactive': 'view/self',
     })
@@ -68,8 +65,6 @@ async def view_self(req: web.Request, user: User):
 async def view_foreign(req: web.Request, user: User):
     wishes = await db.foreign_wishes_of(user.id)
     return render_template('wish/view-foreign.html', req, BASIC_CONTEXT | {
-        'user': user,
-        'users': db.users,
         'wishes': wishes,
         'menuactive': 'view/foreign',
     })
@@ -79,8 +74,6 @@ async def view_foreign(req: web.Request, user: User):
 @authenticated
 async def view_other(req: web.Request, user: User):
     return render_template('wish/view-other-select.html', req, BASIC_CONTEXT | {
-        'user': user,
-        'users': db.users,
         'menuactive': 'view/other',
     })
 
@@ -97,8 +90,6 @@ async def view_other(req: web.Request, user: User):
 
     wishes = await db.wishes_of(recipient.id)
     return render_template('wish/view-other.html', req, BASIC_CONTEXT | {
-        'user': user,
-        'users': db.users,
         'recipient': recipient,
         'wishes': wishes,
         'menuactive': 'view/other'
@@ -111,7 +102,6 @@ async def new(req: web.Request, user: User):
     wish = Wish(None, user, user, None, 0, "", False, None)
     return render_template('wish/editor.html', req, BASIC_CONTEXT | {
         'wish': wish,
-        'users': db.users,
         'action': 'new',
         'menuactive': 'new',
     })
@@ -151,7 +141,6 @@ async def edit(req: web.Request, user: User):
     wish = await db.wish(wishid)
     return render_template('wish/editor.html', req, BASIC_CONTEXT | {
         'wish': wish,
-        'users': db.users,
         'action': 'edit',
         'menuactive': 'view/foreign' if wish.foreign else 'view/self',
     })
@@ -190,10 +179,10 @@ async def delete(req: web.Request, user: User):
     id = int(rkey.WISH_ID(data))
 
     if not await db.own_wish(user.id, id):
-        raise web.HTTPForbidden(text="Tu n'as pas la permission de supprimer ce souhait !")
+        raise web.HTTPForbidden(text="Wopopop t'as pas le droit de supprimer ça !")
 
     await db.delete_wish(id)
-    return web.json_response({ 'msg': "Souhait supprimé !" })
+    raise web.HTTPOk()
 
 
 @routes.post('/wish/claim')
@@ -201,6 +190,18 @@ async def delete(req: web.Request, user: User):
 async def claim(req: web.Request, user: User):
     data = await req.post()
     id = int(rkey.WISH_ID(data))
+    assert user != (await db.wish(id)).recipient, "Tu t'offres tes propres cadeaux ??? C'est triste."
 
     await db.claim_wish(user.id, id)
-    return web.json_response({ 'msg': "Souhait revendiqué !" })
+    raise web.HTTPOk()
+
+
+@routes.post('/wish/desist')
+@authenticated
+async def desist(req: web.Request, user: User):
+    data = await req.post()
+    id = int(rkey.WISH_ID(data))
+    assert user != (await db.wish(id)).recipient, "Cette situation est impossible. Ou devrait l'être."
+
+    await db.claim_wish(None, id)
+    raise web.HTTPOk()

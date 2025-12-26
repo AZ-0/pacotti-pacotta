@@ -7,6 +7,7 @@ import logging
 import os
 
 from .keys import AppKey as akey
+from .auth import current_user
 from . import database as db
 from . import segments
 from . import errors
@@ -29,6 +30,10 @@ async def dump(req: web.Request):
 
 
 routes.static('/static', 'src/static')
+
+
+async def basic_context(req: web.Request) -> dict[str]:
+    return { 'user' : await current_user(req), 'users' : db.users }
 
 
 def init(argv: list[str] = []):
@@ -57,7 +62,8 @@ def init(argv: list[str] = []):
     app.add_routes(auth.routes)
     app.add_routes(segments.routes)
 
-    jinja2_setup(app, loader=FileSystemLoader('src/templates/'))
+    jinja2_setup(app, loader=FileSystemLoader('src/templates/'), context_processors=[basic_context])
+
 
     app.on_startup.append(db.startup)
     return app

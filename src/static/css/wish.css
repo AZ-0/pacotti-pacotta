@@ -1,3 +1,9 @@
+@keyframes blink {
+    0%   { opacity: 1; }
+    50%  { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
 .page {
     display: flex;
     flex-flow: row nowrap;
@@ -28,24 +34,32 @@
 }
 
 .menu > li > a {
-    height: fit-content block;
-    text-align: center;
-    font-weight: bold;
-    color: #2C2D43;
-    text-decoration: none;
-
     display: block;
 
-    border: 3px solid #2C2D43;
+    height: fit-content block;
+    border: 3px solid #3D3E54;
     border-radius: 100px;
     padding: 0.5vh 1vw;
+
+    color: #3D3E54;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+}
+
+.menu > li > a:hover {
+    border-color: #4E4F65;
+    background-color: #DDDDE2;
 }
 
 .menu > li > a.active {
-    background-color: #2C2D43;
+    background-color: #3D3E54;
     color: white;
 }
 
+.menu > li > a.active:hover {
+    background-color: #4E4F65;
+}
 
 /************************/
 /*      MAIN STYLE      */
@@ -98,7 +112,7 @@
     gap: 1vh 0.5vw;
 }
 
-.wish * {
+.wish .important {
     font-weight: bold;
 }
 
@@ -115,7 +129,7 @@
     grid-column: 2;
 
     width: 100%;
-    background-color: #2C2D43;
+    background-color: #3D3E54;
     color: white;
     text-align: center;
     font-weight: normal;
@@ -144,15 +158,9 @@
     gap: 0.3vw;
 }
 
-.wish select {
-    border: 2px solid #2C2D43;
+.wish > .claim select.claimed {
     background-color: white;
-    padding-left: 0.25vw;
-}
-
-.wish > .claim > select.claimed {
-    background-color: #2C2D43;
-    color: white;
+    color: black;
 }
 
 .wish > .warning {
@@ -160,7 +168,8 @@
 
     color: #FF5825;
     font-style: italic;
-    font-weight: normal;
+
+    animation: blink 1.5s ease-in-out infinite;
 }
 
 .wish > .content {
@@ -179,4 +188,126 @@
     grid-column: 6;
     align-self: center;
     justify-self: center;
+}
+
+
+/************************/
+/*        EDITOR        */
+/************************/
+
+
+#editor {
+    display: grid;
+    grid-template-columns: [c1] auto 1vw [c2] auto 1fr [c-2] auto [c-1];
+    grid-template-rows: [r1] auto [r2] auto 1vh [r3] auto [r4] auto 1vh [r5] auto [r6] auto [r-1];
+    justify-content: start;
+    align-content: start;
+    gap: 0vh 0vw;
+}
+
+
+#editor .important {
+    font-weight: bold;
+}
+
+#recipientittle {
+    grid-column: c1;
+    grid-row: r1;
+}
+
+#kindtitle {
+    grid-column: c2;
+    grid-row: r1;
+}
+
+#contenttitle {
+    grid-column: c1;
+    grid-row: r3;
+}
+
+
+#editor select {
+    width: 10vw;
+}
+
+#recipient {
+    grid-column: c1;
+    grid-row: r2;
+}
+
+#kind {
+    grid-column: c2;
+    grid-row: r2;
+}
+
+
+#surprise {
+    grid-column: c-2;
+    grid-row: r3;
+
+    cursor: pointer;
+}
+
+
+#content, #content:focus {
+    grid-column: c1 / c-1;
+    grid-row: r4;
+
+    height: 20vh;
+    outline: none;
+    border: 2px solid #FF8F4E;
+    box-shadow: inset 0 0 3px 0.2px black;
+
+    padding: 0.5vh;
+}
+
+
+#editor button {
+    width: 10vw;
+}
+
+#cancel {
+    grid-column: c1;
+    grid-row: r5;
+}
+
+#submit {
+    grid-column: c-2;
+    grid-row: r5;
+    justify-self: end;
+
+    background-color: #FF5825;
+    color: white;
+}
+
+#submit:hover {
+    background-color: #FF8F4E;
+}
+
+
+/************************/
+/*      VIEW OTHER      */
+/************************/
+
+
+#other-select-form {
+    display: grid;
+    grid-template-columns: [c1] auto 1vw [c2] auto;
+    grid-template-rows: [r1] auto;
+    align-content: start;
+    justify-content: center;
+
+    padding-top: 10vh;
+}
+
+#other-select-form > select {
+    grid-column: c1;
+
+    width: 5vw;
+}
+
+#other-select-form > button {
+    grid-column: c2;
+
+    width: 5vw;
 }

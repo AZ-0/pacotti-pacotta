@@ -11,12 +11,14 @@
     flex-flow: row wrap;
     justify-content: flex-start;
     align-items: flex-start;
-    align-content: flex-start;
     gap: 5vw 5vh;
 }
 
 .page > li > a {
-    display: block;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+
     color: black;
     text-decoration: none;
     text-align: center;
@@ -33,4 +35,8 @@
 .page > li > a > div > img {
     max-width: 100%;
     max-height: 100%;
+}
+
+.page > li > a > p {
+    max-width: 10vw;
 }

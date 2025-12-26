@@ -6,11 +6,12 @@
         
     </head>
     <body>
-        <ul class="header">
-            <li><a href="/"><img src="/static/img/logo-white.png"/></a></li>
-            <li><a href="/">accueil</a></li>
-            <li><a href="/wish">coin cadeau</a></li>
-        </ul>
+        <div class="header">
+            <a href="/"><img src="/static/img/logo-white.png"/></a>
+            <a href="/">Accueil</a>
+            <a href="/wish">Coin cadeaux</a>
+            <a class="log" href="/{% if user %}logout">Déconnexion{% else %}login">Connexion{% endif %}</a>
+        </div>
         <ul class="page">
             <li><a href="/wish"><div><img src="/static/img/gift.png"/></div><p>Le coin cadeau</p></a></li>
         </ul>

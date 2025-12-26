@@ -2,37 +2,36 @@
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="/static/css/generic.css"/>
-        <script src="/static/js/user.js" defer></script>
+        <link rel="stylesheet" type="text/css" href="/static/css/wish.css"/>
+        <script src="/static/js/wish.js" defer></script>
     </head>
     <body>
-        <x-navbar></x-navbar>
-        <div class="main">
-            <h1>Le coin cadeaux</h1>
-            <h3>De qui veux-tu consulter les souhaits ?</h3>
-
-            <form id="form">
-                <select id="user" autofocus required>
-                    {% for uid, user in users.items() %}
-                    <option value="{{ uid }}">{{ user.name }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit">Go!</button>
-            </form>
-
-            <ul>
-                <li><a href="/wish/new">Nouveau souhait</a></li>
-                <li><a href="/wish/view/self">Consulter mes souhaits</a></li>
-                <li><a href="/wish/view/foreign">Consulter les souhaits que j'ai créé pour quelqu'un d'autre</a></li>
-                <li><a href="/wish/view/other">Consulter les souhaits de quelqu'un d'autre</a></li>
+        <div class="header">
+            <a href="/"><img src="/static/img/logo-white.png"/></a>
+            <a href="/">Accueil</a>
+            <a href="/wish">Coin cadeaux</a>
+            <a class="log" href="/{% if user %}logout">Déconnexion{% else %}login">Connexion{% endif %}</a>
+        </div>
+        <div class="page">
+            <ul class="menu">
+                {% for key, option in menu.items() %}
+                <li><a href="/wish/{{key}}"{% if key == menuactive %} class="active"{% endif %}>{{option}}</a></li>
+                {% endfor %}
             </ul>
+            <div class="main" userID={{ user.id }}>
+                <div class="subheader">
+                    <h1 class="title">De qui veux-tu consulter les souhaits ?</h1>
+                    <p class="subtitle">Allons jeter un coup d'oeil ! 🛸</p>
+                </div>
+                <form id="other-select-form">
+                    <select id="user" required>
+                        {% for uid, user in users.items() %}
+                        <option value="{{ uid }}">{{ user.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Go!</button>
+                </form>
+            </div>
         </div>
     </body>
-    <script>
-        const form = document.getElementById('form')
-        const user = document.getElementById('user')
-        form.addEventListener('submit', event => {
-            event.preventDefault()
-            location.assign(`/wish/view/${user.value}`)
-        })
-    </script>
 </html>

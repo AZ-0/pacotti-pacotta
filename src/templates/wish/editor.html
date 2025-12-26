@@ -6,47 +6,50 @@
         
     </head>
     <body>
-        <ul class="header">
-            <li><a href="/"><img src="/static/img/logo-white.png"/></a></li>
-            <li><a href="/">accueil</a></li>
-            <li><a href="/wish">coin cadeau</a></li>
-        </ul>
+        <div class="header">
+            <a href="/"><img src="/static/img/logo-white.png"/></a>
+            <a href="/">Accueil</a>
+            <a href="/wish">Coin cadeaux</a>
+            <a class="log" href="/{% if user %}logout">Déconnexion{% else %}login">Connexion{% endif %}</a>
+        </div>
         <div class="page">
             <ul class="menu">
                 {% for key, option in menu.items() %}
                 <li><a href="/wish/{{key}}"{% if key == menuactive %} class="active"{% endif %}>{{option}}</a></li>
                 {% endfor %}
             </ul>
-            <div class="main">
+            <div class="main" userID={{ user.id }}>
                 <div class="subheader">
                     <h1 class="title">Éditeur de souhait</h1>
                     <p class="subtitle">Un souhait est un espoir, pas une promesse...</p>
                 </div>
-                <form method="post" action="/wish/{{ action }}">
-                    <select name="recipient" autocomplete="off" required>
+                <form id="editor" method="post" action="/wish/{{ action }}">
+                    <p class="important" id="recipienttitle">Destinataire</p>
+                    <select name="recipient" id="recipient" autocomplete="off" required>
                         {% for uid, user in users.items() %}
                         <option value="{{ uid }}"{% if user == wish.recipient %}selected{% endif %}>{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 
-                    <select name="kind" autocomplete="off" required>
+                    <p class="important" id="kindtitle">Catégorie</p>
+                    <select name="kind" id="kind" autocomplete="off" required>
                         <option value="0">Livre</option>
                         <option value="1">Jeu vidéo</option>
                     </select>
                 
-                    <textarea name="content" autocomplete="off" required autofocus>{{ wish.content }}</textarea>
+                    <p class="important" id="contenttitle">Contenu</p>
+                    <textarea name="content" id="content" autocomplete="off" required autofocus>{{ wish.content }}</textarea>
                 
-                    <label>
+                    <label id="surprise" class="important">
                         <input type="checkbox" name="hidden" value="0"/>
-                        Ce souhait est une surprise.
+                        Ce souhait est une surprise. Il ne sera pas visible par le destinataire.
                     </label>
                 
                     <input type="hidden" name="wishid" value="{{ wish.id }}"/>
                 
-                    <button type="submit">Enregistrer</button>
+                    <button class="important" type="button" id="cancel" onclick="history.back();return false;">Annuler</button>
+                    <button class="important" type="submit" id="submit">Enregistrer</button>
                 </form>
-                
-                <button onclick="history.back();return false;">Annuler</button>
             </div>
         </div>
     </body>

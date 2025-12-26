@@ -6,18 +6,19 @@
         <script src="/static/js/wish.js" defer></script>
     </head>
     <body>
-        <ul class="header">
-            <li><a href="/"><img src="/static/img/logo-white.png"/></a></li>
-            <li><a href="/">accueil</a></li>
-            <li><a href="/wish">coin cadeau</a></li>
-        </ul>
+        <div class="header">
+            <a href="/"><img src="/static/img/logo-white.png"/></a>
+            <a href="/">Accueil</a>
+            <a href="/wish">Coin cadeaux</a>
+            <a class="log" href="/{% if user %}logout">Déconnexion{% else %}login">Connexion{% endif %}</a>
+        </div>
         <div class="page">
             <ul class="menu">
                 {% for key, option in menu.items() %}
                 <li><a href="/wish/{{key}}"{% if key == menuactive %} class="active"{% endif %}>{{option}}</a></li>
                 {% endfor %}
             </ul>
-            <div class="main">
+            <div class="main" userID={{ user.id }}>
                 <div class="subheader">
                     <h1 class="title">Mes idées pour quelqu'un d'autre</h1>
                     <p class="subtitle">Un grand pouvoir implique de grandes responsabilités.</p>
@@ -26,19 +27,19 @@
                     {% for wish in wishes %}
                     {% if not (False and wish.hidden) %}
                     <div class="wish{% if (False and wish.foreign) or wish.hidden %} warning{% endif %}">
-                        <h4 class="date">Créé le {{ wish.date_str() }}</h4>
-                        <p class="kind">{{ wish.kind }}</p>
+                        <h4 class="important date">Créé le {{ wish.date_str() }}</h4>
+                        <p class="important kind">{{ wish.kind }}</p>
                         <div class="recipient">
-                            <p>Destinataire:</p>
-                            <select wishid="{{ wish.id }}">
+                            <p class="important">Destinataire:</p>
+                            <select wishid="{{ wish.id }}" class="recipient" autocomplete="off">
                                 {% for uid, user in users.items() %}
                                 <option value="{{ uid }}" {% if uid == wish.recipient.id %} selected{% endif %}>{{ user.name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
                         <div class="claim">
-                            <p>Pris en charge par</p>
-                            <select wishid="{{ wish.id }}"{% if wish.claimant %} class="claimed"{% endif %} autocomplete="off">
+                            <p class="important">Pris en charge par</p>
+                            <select wishid="{{ wish.id }}" class="claimant{% if wish.claimant %} claimed{% endif %}" autocomplete="off">
                                 <option value="-1">Aucun</option>
                                 {% if wish.claimant %}
                                 <option value="{{ wish.claimant.id }}" selected{% if user.id != wish.claimant.id %} disabled hidden{% endif %}>{{ wish.claimant.name }}</option>
@@ -48,11 +49,7 @@
                                 {% endif %}
                             </select>
                         </div>
-                        {% if wish.hidden %}
-                        <p class="warning">
-                            Ce souhait est une surprise !
-                        </p>
-                        {% endif %}
+                        {% if wish.hidden %}<p class="important warning">Ce souhait est une surprise !</p>{% endif %}
                         <p class="content">
                             {{ wish.content }}
                         </p>

@@ -2,6 +2,7 @@ from aiohttp_session import Session, get_session, new_session
 from aiohttp_jinja2 import render_template
 from aiohttp import web
 
+from ..model import User
 from ..keys import SessionKey as skey, RequestKey as rkey, MsgKey as msg
 from .. import database as db
 
@@ -13,6 +14,7 @@ async def renew_session(req: web.Request) -> tuple[Session,Session]:
     new = await new_session(req)
     new[skey.HALTPASS] = skey.HALTPASS(old)
     return old, new
+
 
 @routes.view('/halt')
 class Halt(web.View):
@@ -76,22 +78,26 @@ class Login(web.View):
         return web.HTTPOk()
 
 
-@routes.post('/logout')
+@routes.get('/logout')
 async def logout(req: web.Request):
     await renew_session(req)
-    return web.HTTPOk()
+    return web.HTTPFound('/')
+
+
+
+async def current_user(req: web.Request) -> User:
+    uid = skey.USER_ID(await get_session(req))
+    return db.users.get(int(uid)) if uid else None
 
 
 def authenticated(handler):
-    """Forces user to be authenticated to access this endpoint"""
+    """No pasarán"""
 
     async def auth_middleware(req: web.Request):
-        session = await get_session(req)
-
-        uid = skey.USER_ID(session)
-        if uid is None or (user := db.users.get(int(uid))) is None:
-            return await Login(req)
-
-        return await handler(req, user)
+        return await (
+            handler(req, user)
+                if (user := await current_user(req)) else
+            Login(req)
+        )
 
     return auth_middleware

@@ -1,8 +1,53 @@
 @import url('/static/css/fonts.css');
 
+
+/************************/
+/*    GENERIC STYLE     */
+/************************/
+
+
+button {
+    cursor: pointer;
+
+    border: 1px solid black;
+    border-radius: 100px;
+    padding: 0.25vh 1vw;
+
+    background-color: #EEEEF3;
+}
+
+button:hover {
+    background-color: #DDDDE2;
+}
+
+select {
+    cursor: pointer;
+
+    border: 2px solid #3D3E54;
+    padding-left: 0.3vw;
+
+    background-color: #3D3E54;
+    color: white;
+    font-family: monospace;
+    font-weight: normal;
+    font-size: large;
+}
+
+select:focus {
+    outline: 1px solid lightgreen;
+}
+
+select option {
+    font-family: monospace;
+}
+
+
+/************************/
+/*     PAGE LAYOUT      */
+/************************/
+
+
 html, body {
-    margin: 0;
-    padding: 0;
     width: 100vw;
     height: 100vh;
 }
@@ -16,21 +61,27 @@ body {
     flex: 0 1 auto;
 
     margin: 0;
-    list-style-type: none;
     background-color: #FF5825;
-    padding-left: 15px;
+    padding: 0vh 1vw;
 
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: repeat(3, auto) 1fr auto;
+    grid-template-rows: auto;
+    grid-auto-flow: row;
+
     align-items: center;
+    justify-items: center;
 }
 
-.header > li > a {
+.header > a {
     display: block;
     padding: 15px 15px;
     color: white;
     text-decoration: none;
+}
+
+.header > a.log {
+    grid-column: -2;
 }
 
 .page {
