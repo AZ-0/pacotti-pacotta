@@ -75,4 +75,4 @@ if __name__ == '__main__':
     os.chdir(Path(__file__).parent.parent.absolute())
 
     app = init(argv)
-    web.run_app(app, port=8080)
+    web.run_app(app, port=80)
