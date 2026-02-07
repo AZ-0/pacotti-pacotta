@@ -100,7 +100,7 @@
     grid-template-columns: auto auto 1fr auto auto min-content;
     grid-auto-flow: row;
     align-content: start;
-    gap: 2.5vh 1vw;
+    gap: 5vh 1vw;
 }
 
 .wish {
