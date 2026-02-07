@@ -190,7 +190,10 @@ async def delete(req: web.Request, user: User):
 async def claim(req: web.Request, user: User):
     data = await req.post()
     id = int(rkey.WISH_ID(data))
+    wish = await db.wish(id)
+
     assert user != (await db.wish(id)).recipient, "Tu t'offres tes propres cadeaux ??? C'est triste."
+    assert not wish.claimant, f"Ce souhait est déjà revendiqué par {wish.claimant.name}"
 
     await db.claim_wish(user.id, id)
     raise web.HTTPOk()
@@ -201,7 +204,9 @@ async def claim(req: web.Request, user: User):
 async def desist(req: web.Request, user: User):
     data = await req.post()
     id = int(rkey.WISH_ID(data))
-    assert user != (await db.wish(id)).recipient, "Cette situation est impossible. Ou devrait l'être."
+    wish = await db.wish(id)
+    assert user != wish.recipient, "Cette situation est impossible. Ou devrait l'être."
+    assert user == wish.claimant, "Nul n'arrête le Père Noël."
 
     await db.claim_wish(None, id)
     raise web.HTTPOk()

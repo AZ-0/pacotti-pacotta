@@ -52,7 +52,13 @@ function onSelectClaimant(selector) {
         const claimed = claimantid != -1 && claimantid != userID;
 
         if (selector.value == -1) {
-            msg = `Veux tu vraiment annuler la revendication de ce souhait ?${claimed ? `\nÇa se fait pas pour ${claimant}.` : ""}`
+            if (claimed) {
+                alert("Nul n'arrête le Père Noël.");
+                selector.value = claimantid;
+                return;
+            }
+
+            msg = "Veux tu vraiment annuler la revendication de ce souhait ?";
             if (!confirm(msg)) {
                 selector.value = claimantid;
                 return;
@@ -64,7 +70,7 @@ function onSelectClaimant(selector) {
             });
 
             if (!response.ok) {
-                alert(`Une erreur est survenue lors du désistement${claimed ? " forcé" : ""} (code ${response.status}):\n${response.json()['err']}`);
+                alert(`Une erreur est survenue lors du désistement (code ${response.status}):\n${response.json()['err']}`);
                 selector.value = claimantid;
                 return;
             }
@@ -72,7 +78,13 @@ function onSelectClaimant(selector) {
             selector.classList.remove('claimed');
         }
         else {
-            msg = `Veux tu vraiment revendiquer ce souhait ?${claimed ? `\n${claimant} était là en premier.` : ""}`
+            if (claimed) {
+                alert(`Eh non ! ${claimant} était là en premier. Parle lui-s-en !`);
+                selector.value = claimantid;
+                return;
+            }
+
+            msg = "Veux tu vraiment revendiquer ce souhait ?"
             if (!confirm(msg)) {
                 selector.value = claimantid;
                 return;
