@@ -3,10 +3,13 @@ from aiosqlite import Cursor, Row, connect
 from typing import Iterable, Callable, TypeVar
 import os, logging, contextlib
 
-from . model import User, UserID, Wish, WishID, WishKind
+from . model import User, UserID, Wish, WishID, WishKind, ymd_to_date
 from . keys import AppKey as akey
+from . default_users import DEFAULT_USERS # list[("name", (y, m, d), "pwd")]
 
 DB_PATH = 'db.sqlite'
+
+
 
 TABLE_DEF = [
 """
@@ -36,9 +39,9 @@ CREATE TABLE IF NOT EXISTS wishes (
     FOREIGN KEY(claimant)  REFERENCES users(id) ON DELETE SET NULL
 ) STRICT;
 """,
-"""
-INSERT OR REPLACE INTO users (name,bday,pwd) VALUES ("admin",0,"pwd");
-""",
+*(f"""
+INSERT OR REPLACE INTO users (name,bday,pwd) VALUES ({name},{ymd_to_date(y, m, d)},"{pwd}");
+""" for name, (y, m, d), pwd in DEFAULT_USERS),
 ]
 
 T = TypeVar('T')
