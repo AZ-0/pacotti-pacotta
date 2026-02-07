@@ -81,18 +81,6 @@ def parse_wish(row: Row) -> Wish:
 ##### META
 
 
-async def debug_users():
-    await execute_commit('INSERT INTO users (name,bday,pwd) VALUES ("userA",42,"pwdA");')
-    await execute_commit('INSERT INTO users (name,bday,pwd) VALUES ("userB",87,"pwdB");')
-
-
-async def debug_wishes():
-    admin, userA, userB, *_ = users.values()
-    await register_wish(Wish(None,admin,admin,userA,0,"admin←admin",False,48646))
-    await register_wish(Wish(None,admin,userA,None,1,"admin←userA",False,45352))
-    await register_wish(Wish(None,admin,userB,userB,0,"admin←userB",True,35435))
-
-
 async def startup(app: Application):
     global DB_PATH
 
@@ -104,16 +92,10 @@ async def startup(app: Application):
     await execute_many(TABLE_DEF)
     app.logger.info(f"Initialized database at {DB_PATH}")
 
-    if app[akey.DEBUG]:
-        await debug_users()
-
     for row in await execute_fetchall("SELECT * FROM users"):
         user = parse_user(row)
         users[user.id] = user
     app.logger.info(f"Loaded {len(users)} users")
-
-    if app[akey.DEBUG]:
-        await debug_wishes()
 
 
 async def execute_fetchall(statement: str, *args) -> Iterable[Row]:
