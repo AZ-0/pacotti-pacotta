@@ -30,7 +30,7 @@
                         <h4 class="important date">Créé le {{ wish.date_str() }}</h4>
                         <p class="important kind">{{ wish.kind }}</p>
                         
-                        {%% if not hide_claimant %%}
+                        {% if not hide_claimant %}
                         <div class="claim">
                             <p class="important">Pris en charge par</p>
                             <select wishid="{{ wish.id }}" class="claimant{% if wish.claimant %} claimed{% endif %}" autocomplete="off">
@@ -43,7 +43,7 @@
                                 {% endif %}
                             </select>
                         </div>
-                        {%% endif %%}
+                        {% endif %}
                         {% if wish.foreign %}<p class="important warning">Ce souhait est proposé par {{ wish.maker.name }}{% if wish.hidden %} — c'est une surprise !{% endif %}</p>{% endif %}
                         <p class="content">
                             {{ wish.content }}

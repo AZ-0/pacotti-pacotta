@@ -155,7 +155,7 @@ _TEMPLATE_WISH_RECIPIENTS = r'''
 '''.strip()
 
 _TEMPLATE_WISH_CLAIMANT = r'''
-{%% if not hide_claimant %%}
+{% if not hide_claimant %}
 <div class="claim">
     <p class="important">Pris en charge par</p>
     <select wishid="{{ wish.id }}" class="claimant{% if wish.claimant %} claimed{% endif %}" autocomplete="off">
@@ -168,7 +168,7 @@ _TEMPLATE_WISH_CLAIMANT = r'''
         {% endif %}
     </select>
 </div>
-{%% endif %%}
+{% endif %}
 '''.strip()
 
 _TEMPLATE_WISH_WARNING_FOREIGN = r'''
