@@ -169,7 +169,7 @@
     color: #FF5825;
     font-style: italic;
 
-    animation: blink 1.5s ease-in-out infinite;
+    /* animation: blink 1.5s ease-in-out infinite; */
 }
 
 .wish > .content {
