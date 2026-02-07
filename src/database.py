@@ -87,7 +87,7 @@ async def debug_users():
 
 
 async def debug_wishes():
-    admin, userA, userB = users.values()
+    admin, userA, userB, *_ = users.values()
     await register_wish(Wish(None,admin,admin,userA,0,"admin←admin",False,48646))
     await register_wish(Wish(None,admin,userA,None,1,"admin←userA",False,45352))
     await register_wish(Wish(None,admin,userB,userB,0,"admin←userB",True,35435))
