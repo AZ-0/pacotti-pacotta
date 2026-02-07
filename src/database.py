@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS wishes (
 ) STRICT;
 """,
 *(f"""
-INSERT OR REPLACE INTO users (name,bday,pwd) VALUES ({name},{ymd_to_date(y, m, d)},"{pwd}");
+INSERT OR REPLACE INTO users (name,bday,pwd) VALUES ({repr(name)},{ymd_to_date(y, m, d)},{repr(pwd)});
 """ for name, (y, m, d), pwd in DEFAULT_USERS),
 ]
 
