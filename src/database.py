@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS wishes (
     id        INTEGER NOT NULL,
     recipient INTEGER NOT NULL,
     maker     INTEGER NOT NULL,
-    claimant   INTEGER,
+    claimant  INTEGER,
     kind      INTEGER NOT NULL,
     content   TEXT    NOT NULL,
     hidden    INT     NOT NULL,
@@ -192,6 +192,14 @@ async def foreign_wishes_of(maker: UserID) -> list[Wish]:
         maker, maker
     )
     return sorted([ parse_wish(row) for row in data ], key=lambda w:w.id)
+
+async def wishes_claimed_by(claimant: UserID) -> list[Wish]:
+    """List the wishes claimed by an user"""
+    data = await execute_fetchall(
+        "SELECT * FROM wishes WHERE claimant = ?",
+        claimant
+    )
+    return sorted([ parse_wish(row) for row in data ], key=lambda w:(w.maker.name,w.date))
 
 
 ##### CREATE

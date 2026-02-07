@@ -13,6 +13,7 @@ BASIC_CONTEXT = {
         "view/self" : "Consulter mes souhaits",
         "view/other" : "Consulter les souhaits de quelqu'un d'autre",
         "view/foreign" : "Consulter les souhaits que j'ai créé pour quelqu'un d'autre",
+        "view/claimed" : "Consulter les souhaits que j'ai revendiqué",
     }
 }
 
@@ -77,6 +78,14 @@ async def view_other(req: web.Request, user: User):
         'menuactive': 'view/other',
     })
 
+@routes.get('/wish/view/claimed')
+@authenticated
+async def view_other(req: web.Request, user: User):
+    wishes = await db.wishes_claimed_by(user.id)
+    return render_template('wish/view-claimed.html', req, BASIC_CONTEXT | {
+        'wishes': wishes,
+        'menuactive': 'view/claimed',
+    })
 
 @routes.get('/wish/view/{id:\d+}')
 @authenticated

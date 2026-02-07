@@ -64,6 +64,7 @@ TITLE_WISH_VIEW_OTHER_SELECT = "De qui veux-tu consulter les souhaits ?"
 TITLE_WISH_VIEW_SELF = "Mes souhaits"
 TITLE_WISH_VIEW_OTHER = "Les souhaits de {{ recipient.name }}"
 TITLE_WISH_VIEW_FOREIGN = "Mes idées pour quelqu'un d'autre"
+TITLE_WISH_VIEW_CLAIMED = "Les souhaits que j'ai revendiqués"
 
 SUBTITLE_WISH_INDEX = "Un souhait est un espoir, pas une promesse..."
 SUBTITLE_WISH_EDITOR = SUBTITLE_WISH_INDEX
@@ -71,6 +72,7 @@ SUBTITLE_WISH_VIEW_OTHER_SELECT = "Allons jeter un coup d'oeil ! 🛸"
 SUBTITLE_WISH_VIEW_SELF = "J'espère que tu as été sage ! Sinon..."
 SUBTITLE_WISH_VIEW_OTHER = SUBTITLE_WISH_VIEW_OTHER_SELECT
 SUBTITLE_WISH_VIEW_FOREIGN = "Un grand pouvoir implique de grandes responsabilités."
+SUBTITLE_WISH_VIEW_CLAIMED = "Le capitalisme vous a eu... 💸"
 
 
 def _template_wish_page(title, subtitle, template_main):
@@ -211,7 +213,7 @@ def _template_wish_list_main(self: bool, foreign: bool):
 TEMPLATE_WISH_VIEW_SELF_MAIN    = _template_wish_list_main(self=True,  foreign=False)
 TEMPLATE_WISH_VIEW_OTHER_MAIN   = _template_wish_list_main(self=False, foreign=False)
 TEMPLATE_WISH_VIEW_FOREIGN_MAIN = _template_wish_list_main(self=False, foreign=True)
-
+TEMPLATE_WISH_VIEW_CLAIMED_MAIN = _template_wish_list_main(self=False, foreign=True)
 
 
 ###################################
@@ -228,6 +230,7 @@ class Templates:
     WISH_VIEW_SELF = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_SELF, SUBTITLE_WISH_VIEW_SELF, TEMPLATE_WISH_VIEW_SELF_MAIN), 'wish')
     WISH_VIEW_OTHER = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_OTHER, SUBTITLE_WISH_VIEW_OTHER, TEMPLATE_WISH_VIEW_OTHER_MAIN), 'wish')
     WISH_VIEW_FOREIGN = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_FOREIGN, SUBTITLE_WISH_VIEW_FOREIGN, TEMPLATE_WISH_VIEW_FOREIGN_MAIN), 'wish')
+    WISH_VIEW_CLAIMED = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_CLAIMED, SUBTITLE_WISH_VIEW_CLAIMED, TEMPLATE_WISH_VIEW_CLAIMED_MAIN), 'wish')
 
 
 if __name__ == '__main__':
@@ -248,6 +251,9 @@ if __name__ == '__main__':
 
     with open('wish/view-foreign.html', 'w') as file:
         file.write(Templates.WISH_VIEW_FOREIGN)
+
+    with open('wish/view-claimed.html', 'w') as file:
+        file.write(Templates.WISH_VIEW_CLAIMED)
 
     with open('index.html', 'w') as file:
         file.write(Templates.INDEX)
