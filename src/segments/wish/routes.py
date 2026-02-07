@@ -13,7 +13,7 @@ BASIC_CONTEXT = {
         "view/self" : "Consulter mes souhaits",
         "view/other" : "Consulter les souhaits de quelqu'un d'autre",
         "view/foreign" : "Consulter les souhaits que j'ai créé pour quelqu'un d'autre",
-        "view/claimed" : "Consulter les souhaits que j'ai revendiqué",
+        "view/claimed" : "Consulter les souhaits que j'ai revendiqués",
     }
 }
 

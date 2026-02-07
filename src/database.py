@@ -98,8 +98,8 @@ async def startup(app: Application):
 
     if app[akey.DEBUG]:
         DB_PATH = 'debug-db.sqlite'
-        with contextlib.suppress(FileNotFoundError):
-            os.remove(DB_PATH)
+        # with contextlib.suppress(FileNotFoundError):
+        #     os.remove(DB_PATH)
 
     await execute_many(TABLE_DEF)
     app.logger.info(f"Initialized database at {DB_PATH}")
