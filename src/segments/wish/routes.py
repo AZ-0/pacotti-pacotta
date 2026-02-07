@@ -1,7 +1,9 @@
 from aiohttp_jinja2 import render_template
 from aiohttp import web
 
-from ... model import User, Wish, wishkinds
+from datetime import datetime
+
+from ... model import User, Wish, wishkinds, date_to_ymd
 from ... auth import authenticated
 from ... keys import RequestKey as rkey
 from ... import database as db
@@ -14,7 +16,8 @@ BASIC_CONTEXT = {
         "view/other" : "Consulter les souhaits de quelqu'un d'autre",
         "view/foreign" : "Consulter les souhaits que j'ai créés pour quelqu'un d'autre",
         "view/claimed" : "Consulter les souhaits que j'ai revendiqués",
-    }
+    },
+    "hide_claimant": False,
 }
 
 
@@ -65,9 +68,13 @@ async def view_self(req: web.Request, user: User):
 @authenticated
 async def view_foreign(req: web.Request, user: User):
     wishes = await db.foreign_wishes_of(user.id)
+    birthyear, _, _ = date_to_ymd(user.birthday)
+    hide_claimant = datetime.now().year - birthyear < 12
+
     return render_template('wish/view-foreign.html', req, BASIC_CONTEXT | {
         'wishes': wishes,
         'menuactive': 'view/foreign',
+        'hide_claimant' : hide_claimant,
     })
 
 
@@ -97,11 +104,15 @@ async def view_other(req: web.Request, user: User):
     recipient = db.users.get(uid)
     assert recipient is not None
 
+    birthyear, _, _ = date_to_ymd(user.birthday)
+    hide_claimant = datetime.now().year - birthyear < 12
+
     wishes = await db.wishes_of(recipient.id)
     return render_template('wish/view-other.html', req, BASIC_CONTEXT | {
         'recipient': recipient,
         'wishes': wishes,
-        'menuactive': 'view/other'
+        'menuactive': 'view/other',
+        'hide_claimant': hide_claimant,
     })
 
 

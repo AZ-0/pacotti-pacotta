@@ -58,7 +58,6 @@ body {
 }
 
 .header {
-    position: sticky;
     flex: 0 1 auto;
 
     margin: 0;
