@@ -108,18 +108,18 @@ TEMPLATE_WISH_EDITOR_MAIN = r''.join([r'''
     <p class="important" id="recipienttitle">Destinataire</p>
     <select name="recipient" id="recipient" autocomplete="off" required>
         {% for uid, user in users.items() %}
-        <option value="{{ uid }}"{% if user == wish.recipient %}selected{% endif %}>{{ user.name }}</option>
+        <option value="{{ uid }}"{% if user == wish.recipient %} selected{% endif %}>{{ user.name }}</option>
         {% endfor %}
     </select>
 
     <p class="important" id="kindtitle">Catégorie</p>
     <select name="kind" id="kind" autocomplete="off" required>''',
     *(rf'''
-        <option value="{category.value}"{{% if "{category}" == wish.kind %}}selected{{% endif %}}>{category}</option>'''
+        <option value="{category.value}"{{% if wish.kind.value == {category.value} %}} selected{{% endif %}}>{category}</option>'''
         if isinstance(category, WishKind) else ''.join([rf'''
         <optgroup label="{category[0]}">''',
             *(rf'''
-            <option value={kind.value}{{% if "{kind}" == wish.kind %}}selected{{% endif %}}'''rf'''>{kind}</option>'''
+            <option value={kind.value}{{% if wish.kind.value == {kind.value} %}} selected{{% endif %}}'''rf'''>{kind}</option>'''
             for kind in category[1]
             ), rf'''
         </optgroup>'''

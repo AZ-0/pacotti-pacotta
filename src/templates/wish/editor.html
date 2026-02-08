@@ -27,41 +27,41 @@
                     <p class="important" id="recipienttitle">Destinataire</p>
                     <select name="recipient" id="recipient" autocomplete="off" required>
                         {% for uid, user in users.items() %}
-                        <option value="{{ uid }}"{% if user == wish.recipient %}selected{% endif %}>{{ user.name }}</option>
+                        <option value="{{ uid }}"{% if user == wish.recipient %} selected{% endif %}>{{ user.name }}</option>
                         {% endfor %}
                     </select>
                 
                     <p class="important" id="kindtitle">Catégorie</p>
                     <select name="kind" id="kind" autocomplete="off" required>
                         <optgroup label="Lire">
-                            <option value=3{% if "BD" == wish.kind %}selected{% endif %}>BD</option>
-                            <option value=2{% if "Livre" == wish.kind %}selected{% endif %}>Livre</option>
+                            <option value=3{% if wish.kind.value == 3 %} selected{% endif %}>BD</option>
+                            <option value=2{% if wish.kind.value == 2 %} selected{% endif %}>Livre</option>
                         </optgroup>
                         <optgroup label="Jouer">
-                            <option value=6{% if "Jeu Vidéo" == wish.kind %}selected{% endif %}>Jeu Vidéo</option>
-                            <option value=4{% if "Jeu de Société" == wish.kind %}selected{% endif %}>Jeu de Société</option>
-                            <option value=5{% if "Jouet" == wish.kind %}selected{% endif %}>Jouet</option>
+                            <option value=6{% if wish.kind.value == 6 %} selected{% endif %}>Jeu Vidéo</option>
+                            <option value=4{% if wish.kind.value == 4 %} selected{% endif %}>Jeu de Société</option>
+                            <option value=5{% if wish.kind.value == 5 %} selected{% endif %}>Jouet</option>
                         </optgroup>
                         <optgroup label="Regarder">
-                            <option value=7{% if "Cinéma" == wish.kind %}selected{% endif %}>Cinéma</option>
-                            <option value=8{% if "DVD" == wish.kind %}selected{% endif %}>DVD</option>
-                            <option value=9{% if "Spectacle" == wish.kind %}selected{% endif %}>Spectacle</option>
+                            <option value=7{% if wish.kind.value == 7 %} selected{% endif %}>Cinéma</option>
+                            <option value=8{% if wish.kind.value == 8 %} selected{% endif %}>DVD</option>
+                            <option value=9{% if wish.kind.value == 9 %} selected{% endif %}>Spectacle</option>
                         </optgroup>
                         <optgroup label="Écouter">
-                            <option value=10{% if "CD" == wish.kind %}selected{% endif %}>CD</option>
-                            <option value=11{% if "Vinyle" == wish.kind %}selected{% endif %}>Vinyle</option>
+                            <option value=10{% if wish.kind.value == 10 %} selected{% endif %}>CD</option>
+                            <option value=11{% if wish.kind.value == 11 %} selected{% endif %}>Vinyle</option>
                         </optgroup>
                         <optgroup label="Manger">
-                            <option value=12{% if "Nourriture" == wish.kind %}selected{% endif %}>Nourriture</option>
-                            <option value=13{% if "Resto" == wish.kind %}selected{% endif %}>Resto</option>
+                            <option value=12{% if wish.kind.value == 12 %} selected{% endif %}>Nourriture</option>
+                            <option value=13{% if wish.kind.value == 13 %} selected{% endif %}>Resto</option>
                         </optgroup>
                         <optgroup label="Se pavaner">
-                            <option value=14{% if "Accessoires" == wish.kind %}selected{% endif %}>Accessoires</option>
-                            <option value=16{% if "Cosmétiques" == wish.kind %}selected{% endif %}>Cosmétiques</option>
-                            <option value=15{% if "Vêtements" == wish.kind %}selected{% endif %}>Vêtements</option>
+                            <option value=14{% if wish.kind.value == 14 %} selected{% endif %}>Accessoires</option>
+                            <option value=16{% if wish.kind.value == 16 %} selected{% endif %}>Cosmétiques</option>
+                            <option value=15{% if wish.kind.value == 15 %} selected{% endif %}>Vêtements</option>
                         </optgroup>
-                        <option value="1"{% if "Utile" == wish.kind %}selected{% endif %}>Utile</option>
-                        <option value="0"{% if "Autre" == wish.kind %}selected{% endif %}>Autre</option>
+                        <option value="1"{% if wish.kind.value == 1 %} selected{% endif %}>Utile</option>
+                        <option value="0"{% if wish.kind.value == 0 %} selected{% endif %}>Autre</option>
                     </select>
                 
                     <p class="important" id="contenttitle">Contenu</p>
