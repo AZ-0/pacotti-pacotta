@@ -34,34 +34,34 @@
                     <p class="important" id="kindtitle">Catégorie</p>
                     <select name="kind" id="kind" autocomplete="off" required>
                         <optgroup label="Lire">
-                            <option value=3>BD</option>
-                            <option value=2>Livre</option>
+                            <option value=3{% if kind == wish.kind %}selected{% endif %}>BD</option>
+                            <option value=2{% if kind == wish.kind %}selected{% endif %}>Livre</option>
                         </optgroup>
                         <optgroup label="Jouer">
-                            <option value=6>Jeu Vidéo</option>
-                            <option value=4>Jeu de Société</option>
-                            <option value=5>Jouet</option>
+                            <option value=6{% if kind == wish.kind %}selected{% endif %}>Jeu Vidéo</option>
+                            <option value=4{% if kind == wish.kind %}selected{% endif %}>Jeu de Société</option>
+                            <option value=5{% if kind == wish.kind %}selected{% endif %}>Jouet</option>
                         </optgroup>
                         <optgroup label="Regarder">
-                            <option value=7>Cinéma</option>
-                            <option value=8>DVD</option>
-                            <option value=9>Spectacle</option>
+                            <option value=7{% if kind == wish.kind %}selected{% endif %}>Cinéma</option>
+                            <option value=8{% if kind == wish.kind %}selected{% endif %}>DVD</option>
+                            <option value=9{% if kind == wish.kind %}selected{% endif %}>Spectacle</option>
                         </optgroup>
                         <optgroup label="Écouter">
-                            <option value=10>CD</option>
-                            <option value=11>Vinyle</option>
+                            <option value=10{% if kind == wish.kind %}selected{% endif %}>CD</option>
+                            <option value=11{% if kind == wish.kind %}selected{% endif %}>Vinyle</option>
                         </optgroup>
                         <optgroup label="Manger">
-                            <option value=12>Nourriture</option>
-                            <option value=13>Resto</option>
+                            <option value=12{% if kind == wish.kind %}selected{% endif %}>Nourriture</option>
+                            <option value=13{% if kind == wish.kind %}selected{% endif %}>Resto</option>
                         </optgroup>
                         <optgroup label="Se pavaner">
-                            <option value=14>Accessoires</option>
-                            <option value=16>Cosmétiques</option>
-                            <option value=15>Vêtements</option>
+                            <option value=14{% if kind == wish.kind %}selected{% endif %}>Accessoires</option>
+                            <option value=16{% if kind == wish.kind %}selected{% endif %}>Cosmétiques</option>
+                            <option value=15{% if kind == wish.kind %}selected{% endif %}>Vêtements</option>
                         </optgroup>
-                        <option value="1">Utile</option>
-                        <option value="0">Autre</option>
+                        <option value="1"{% if category == wish.kind %}selected{% endif %}>Utile</option>
+                        <option value="0"{% if category == wish.kind %}selected{% endif %}>Autre</option>
                     </select>
                 
                     <p class="important" id="contenttitle">Contenu</p>

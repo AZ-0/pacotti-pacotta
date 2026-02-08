@@ -115,11 +115,11 @@ TEMPLATE_WISH_EDITOR_MAIN = r''.join([r'''
     <p class="important" id="kindtitle">Catégorie</p>
     <select name="kind" id="kind" autocomplete="off" required>''',
     *(rf'''
-        <option value="{category.value}">{category}</option>'''
+        <option value="{category.value}"'''r'''{% if category == wish.kind %}selected{% endif %}'''rf'''>{category}</option>'''
         if isinstance(category, WishKind) else ''.join([rf'''
         <optgroup label="{category[0]}">''',
             *(rf'''
-            <option value={kind.value}>{kind}</option>'''
+            <option value={kind.value}'''r'''{% if kind == wish.kind %}selected{% endif %}'''rf'''>{kind}</option>'''
             for kind in category[1]
             ), rf'''
         </optgroup>'''
