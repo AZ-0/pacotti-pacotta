@@ -3,7 +3,7 @@ from aiohttp import web
 
 from datetime import datetime
 
-from ... model import User, Wish, wishkinds, date_to_ymd
+from ... model import User, Wish, WISHKINDS, date_to_ymd
 from ... auth import authenticated
 from ... keys import RequestKey as rkey
 from ... import database as db
@@ -39,12 +39,12 @@ def parse_wish(data: dict[str]):
     content   = rkey.WISH_CONTENT(data)
 
     recipient = db.users.get(int(recipient))
-    kind    = wishkinds.get(int(kind))
+    kind    = WISHKINDS.get(int(kind))
     hidden  = bool(hidden)
     content = str(content)
 
     assert recipient is not None, "destinataire inconnu"
-    assert kind is not None,      "type de souhait inconnu"
+    assert kind is not None, "type de souhait inconnu"
     return recipient, kind, hidden, content
 
 

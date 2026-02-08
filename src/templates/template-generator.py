@@ -1,3 +1,8 @@
+from sys import path
+path.append('../..')
+from src.model import WishKind, WISHSORT
+
+
 ###################################
 #- Generator machinery
 ####
@@ -10,7 +15,7 @@ def indent(text: str, indent: int):
 
 def _template_scripts(scripts: list[str]) -> str:
     return '        \n'.join(
-        f'<script src="/static/js/{script}.js" defer></script>'
+        f'<script src="{script}" defer></script>'
         for script in scripts
     )
 
@@ -98,7 +103,7 @@ TEMPLATE_WISH_INDEX_MAIN = r'''
 '''.strip()
 
 
-TEMPLATE_WISH_EDITOR_MAIN = r'''
+TEMPLATE_WISH_EDITOR_MAIN = r''.join([r'''
 <form id="editor" method="post" action="/wish/{{ action }}">
     <p class="important" id="recipienttitle">Destinataire</p>
     <select name="recipient" id="recipient" autocomplete="off" required>
@@ -108,9 +113,19 @@ TEMPLATE_WISH_EDITOR_MAIN = r'''
     </select>
 
     <p class="important" id="kindtitle">Catégorie</p>
-    <select name="kind" id="kind" autocomplete="off" required>
-        <option value="0">Livre</option>
-        <option value="1">Jeu vidéo</option>
+    <select name="kind" id="kind" autocomplete="off" required>''',
+    *(rf'''
+        <option value="{category.value}">{category}</option>'''
+        if isinstance(category, WishKind) else ''.join([rf'''
+        <optgroup label="{category[0]}">''',
+            *(rf'''
+            <option value={kind.value}>{kind}</option>'''
+            for kind in category[1]
+            ), rf'''
+        </optgroup>'''
+        ])
+        for category in WISHSORT
+    ), r'''
     </select>
 
     <p class="important" id="contenttitle">Contenu</p>
@@ -126,7 +141,7 @@ TEMPLATE_WISH_EDITOR_MAIN = r'''
     <button class="important" type="button" id="cancel" onclick="history.back();return false;">Annuler</button>
     <button class="important" type="submit" id="submit">Enregistrer</button>
 </form>
-'''.strip()
+''']).strip()
 
 
 TEMPLATE_WISH_VIEW_OTHER_SELECT_MAIN = r'''
@@ -222,17 +237,17 @@ TEMPLATE_WISH_VIEW_CLAIMED_MAIN = _template_wish_list_main(self=False, foreign=T
 #- Templates
 ####
 
-
+SCRIPT_WISH = "/static/js/wish.js"
 
 class Templates:
     INDEX = _template_generic('index', TEMPLATE_INDEX_PAGE)
     WISH_INDEX = _template_generic('wish', _template_wish_page(TITLE_WISH_INDEX, SUBTITLE_WISH_INDEX, TEMPLATE_WISH_INDEX_MAIN))
     WISH_EDITOR = _template_generic('wish', _template_wish_page(TITLE_WISH_EDITOR, SUBTITLE_WISH_EDITOR, TEMPLATE_WISH_EDITOR_MAIN))
-    WISH_VIEW_OTHER_SELECT = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_OTHER_SELECT, SUBTITLE_WISH_VIEW_OTHER_SELECT, TEMPLATE_WISH_VIEW_OTHER_SELECT_MAIN), 'wish')
-    WISH_VIEW_SELF = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_SELF, SUBTITLE_WISH_VIEW_SELF, TEMPLATE_WISH_VIEW_SELF_MAIN), 'wish')
-    WISH_VIEW_OTHER = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_OTHER, SUBTITLE_WISH_VIEW_OTHER, TEMPLATE_WISH_VIEW_OTHER_MAIN), 'wish')
-    WISH_VIEW_FOREIGN = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_FOREIGN, SUBTITLE_WISH_VIEW_FOREIGN, TEMPLATE_WISH_VIEW_FOREIGN_MAIN), 'wish')
-    WISH_VIEW_CLAIMED = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_CLAIMED, SUBTITLE_WISH_VIEW_CLAIMED, TEMPLATE_WISH_VIEW_CLAIMED_MAIN), 'wish')
+    WISH_VIEW_OTHER_SELECT = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_OTHER_SELECT, SUBTITLE_WISH_VIEW_OTHER_SELECT, TEMPLATE_WISH_VIEW_OTHER_SELECT_MAIN), SCRIPT_WISH)
+    WISH_VIEW_SELF = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_SELF, SUBTITLE_WISH_VIEW_SELF, TEMPLATE_WISH_VIEW_SELF_MAIN), SCRIPT_WISH)
+    WISH_VIEW_OTHER = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_OTHER, SUBTITLE_WISH_VIEW_OTHER, TEMPLATE_WISH_VIEW_OTHER_MAIN), SCRIPT_WISH)
+    WISH_VIEW_FOREIGN = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_FOREIGN, SUBTITLE_WISH_VIEW_FOREIGN, TEMPLATE_WISH_VIEW_FOREIGN_MAIN), SCRIPT_WISH)
+    WISH_VIEW_CLAIMED = _template_generic('wish', _template_wish_page(TITLE_WISH_VIEW_CLAIMED, SUBTITLE_WISH_VIEW_CLAIMED, TEMPLATE_WISH_VIEW_CLAIMED_MAIN), SCRIPT_WISH)
 
 
 if __name__ == '__main__':

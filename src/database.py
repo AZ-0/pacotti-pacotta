@@ -175,6 +175,7 @@ async def foreign_wishes_of(maker: UserID) -> list[Wish]:
     )
     return sorted([ parse_wish(row) for row in data ], key=lambda w:w.id)
 
+
 async def wishes_claimed_by(claimant: UserID) -> list[Wish]:
     """List the wishes claimed by an user"""
     data = await execute_fetchall(

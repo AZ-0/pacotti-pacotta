@@ -37,7 +37,7 @@ select:focus {
     outline: 1px solid lightgreen;
 }
 
-select option {
+select optgroup, select option {
     font-family: monospace;
 }
 
