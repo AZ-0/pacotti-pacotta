@@ -77,7 +77,7 @@ SUBTITLE_WISH_VIEW_OTHER_SELECT = "Allons jeter un coup d'oeil ! 🛸"
 SUBTITLE_WISH_VIEW_SELF = "J'espère que tu as été sage ! Sinon..."
 SUBTITLE_WISH_VIEW_OTHER = SUBTITLE_WISH_VIEW_OTHER_SELECT
 SUBTITLE_WISH_VIEW_FOREIGN = "Un grand pouvoir implique de grandes responsabilités."
-SUBTITLE_WISH_VIEW_CLAIMED = "Le capitalisme vous a eu... 💸"
+SUBTITLE_WISH_VIEW_CLAIMED = "Le consumérisme vous a eu... 💸"
 
 
 def _template_wish_page(title, subtitle, template_main):
