@@ -1,3 +1,4 @@
 __pycache__
 *.sqlite
 default_users.py
+screenlog.*
