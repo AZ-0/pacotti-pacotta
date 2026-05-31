@@ -8,6 +8,8 @@ from ... auth import authenticated
 from ... keys import RequestKey as rkey
 from ... import database as db
 
+# From this age (included) onwards, can claim wishes
+MINIMAL_CLAIMANT_AGE = 10
 
 BASIC_CONTEXT = {
     "menu" : {
@@ -69,7 +71,7 @@ async def view_self(req: web.Request, user: User):
 async def view_foreign(req: web.Request, user: User):
     wishes = await db.foreign_wishes_of(user.id)
     birthyear, _, _ = date_to_ymd(user.birthday)
-    hide_claimant = datetime.now().year - birthyear < 12
+    hide_claimant = datetime.now().year - birthyear < MINIMAL_CLAIMANT_AGE
 
     return render_template('wish/view-foreign.html', req, BASIC_CONTEXT | {
         'wishes': wishes,
@@ -105,7 +107,7 @@ async def view_other(req: web.Request, user: User):
     assert recipient is not None
 
     birthyear, _, _ = date_to_ymd(user.birthday)
-    hide_claimant = datetime.now().year - birthyear < 12
+    hide_claimant = datetime.now().year - birthyear < MINIMAL_CLAIMANT_AGE
 
     wishes = await db.wishes_of(recipient.id)
     return render_template('wish/view-other.html', req, BASIC_CONTEXT | {
