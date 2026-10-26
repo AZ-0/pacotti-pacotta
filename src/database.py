@@ -39,8 +39,9 @@ CREATE TABLE IF NOT EXISTS wishes (
     FOREIGN KEY(claimant)  REFERENCES users(id) ON DELETE SET NULL
 ) STRICT;
 """,
+# If you put REPLACE here, it will change the user id. You do not want this
 *(f"""
-INSERT OR REPLACE INTO users (name,bday,pwd) VALUES ({repr(name)},{ymd_to_date(y, m, d)},{repr(pwd)});
+INSERT OR IGNORE INTO users (name,bday,pwd) VALUES ({repr(name)},{ymd_to_date(y, m, d)},{repr(pwd)});
 """ for name, (y, m, d), pwd in DEFAULT_USERS),
 ]
 
